@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Renderer">
+      <UniqueIdentifier>{1031ea14-720b-461a-bce1-1513b0fbba4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Renderer">
+      <UniqueIdentifier>{bb3d9139-5d4f-4929-9fa5-18ca84743173}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Renderer\Shaders">
+      <UniqueIdentifier>{21c693f2-b5de-4195-a61f-188fcc49ac27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Hair">
+      <UniqueIdentifier>{561cd52a-b38d-4b59-a911-e6d144766563}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Hair">
+      <UniqueIdentifier>{f0ce97b6-8eb0-4af1-8d02-5a786440db35}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\HairCuttingGL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="_dependencies\sources\glad\glad.c">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\Shader.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\stb_image.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\Camera.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\Mesh.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\Head.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hair\Hair.cpp">
+      <Filter>Source Files\Hair</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hair\HairNode.cpp">
+      <Filter>Source Files\Hair</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hair\HairLink.cpp">
+      <Filter>Source Files\Hair</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Renderer\Shader.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\stb_image.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\Camera.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\Mesh.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\Head.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hair\Hair.h">
+      <Filter>Header Files\Hair</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hair\HairNode.h">
+      <Filter>Header Files\Hair</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hair\HairLink.h">
+      <Filter>Header Files\Hair</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\Renderer\Shaders\Default.frag">
+      <Filter>Source Files\Renderer\Shaders</Filter>
+    </None>
+    <None Include="src\Renderer\Shaders\Default.vert">
+      <Filter>Source Files\Renderer\Shaders</Filter>
+    </None>
+    <None Include="src\Renderer\Shaders\Hair.vert">
+      <Filter>Source Files\Renderer\Shaders</Filter>
+    </None>
+    <None Include="src\Renderer\Shaders\Hair.frag">
+      <Filter>Source Files\Renderer\Shaders</Filter>
+    </None>
+  </ItemGroup>
+</Project>
