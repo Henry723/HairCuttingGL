@@ -91,130 +91,6 @@ int main()
     Head headModel(headModelSrc, headTexSrc);
     Hair hair1(vec3(0, 0, 0), vec3(0, 0, 0), vec3(0, 0, 0), vec3(0, 0, 0), 1, hairTexSource);
 
-    //float hairVertices[] = {
-    //    // positions         // texture Coords (swapped y coordinates because texture is flipped upside down)
-    //    0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
-    //    0.0f, -0.5f,  0.0f,  0.0f,  1.0f,
-    //    0.25f, -0.5f,  0.0f,  1.0f,  1.0f,
-
-    //    0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
-    //    0.25f, -0.5f,  0.0f,  1.0f,  1.0f,
-    //    0.25f,  0.5f,  0.0f,  1.0f,  0.0f
-    //};
-
-    //// World space positions of hair
-    //// --------------------------------
-    //vector<vec3> hairPosition
-    //{
-    //    vec3(-1.5f, 0.0f, -0.48f),
-    //    vec3(1.5f, 0.0f, 0.51f),
-    //    vec3(0.5f, 0.0f, 0.7f),
-    //    vec3(-0.3f, 0.0f, -2.3f),
-    //    vec3(0.5f, 0.0f, -0.6f)
-    //};
-
-    //// Hair VAO
-    //unsigned int hairVAO, hairVBO;
-    //glGenVertexArrays(1, &hairVAO);
-    //glGenBuffers(1, &hairVBO);
-    //glBindVertexArray(hairVAO);
-    //glBindBuffer(GL_ARRAY_BUFFER, hairVBO);
-    //glBufferData(GL_ARRAY_BUFFER, sizeof(hairVertices), hairVertices, GL_STATIC_DRAW);
-    //glEnableVertexAttribArray(0);
-    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    //glEnableVertexAttribArray(1);
-    //glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    //glBindVertexArray(0);
-
-    //unsigned int VBO, VAO, EBO;
-    //glGenVertexArrays(1, &VAO); // Create vertex array object to store vertex buffer(s)
-    //glGenBuffers(1, &VBO);
-    ////glGenBuffers(1, &EBO);
-    //
-    //// Bind Vertex Array Object first, then bind and set vertex buffers(s), then configure vertex attribute(s).
-    //glBindVertexArray(VAO);
-    //
-    //// Copy vertices array in a vertex buffer for OpenGL to use.
-    //glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    //glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    //
-    //// Copy index array in a element buffer for OpenGL to use.
-    ////glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    ////glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    //
-    //// Set the vertex attributes pointers.
-    //// Position attribute
-    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    //glEnableVertexAttribArray(0);
-    //// Color attribute
-    ////glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    ////glEnableVertexAttribArray(1);
-    //// Texture attribute
-    //glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    //glEnableVertexAttribArray(1);
-    //
-    //// load and create a texture 
-    //unsigned int texture1, texture2;
-   
-    // texture 1
-    // load image, create texture and generate mipmaps
-    //unsigned int hairTextureID;
-    //int width, height, nrChannels;
-    //glGenTextures(1, &hairTextureID);
-    //glBindTexture(GL_TEXTURE_2D, hairTextureID);
-    //glGenerateMipmap(GL_TEXTURE_2D);
-    //// set the texture wrapping parameters
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	// set texture wrapping to GL_REPEAT (default wrapping method)
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    //// set texture filtering parameters
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    //
-
-    //unsigned char* data = stbi_load(hairTexSource, &width, &height, &nrChannels, 0);
-    //if (data)
-    //{
-    //    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-    //    glGenerateMipmap(GL_TEXTURE_2D);
-    //}
-    //else
-    //{
-    //    std::cout << "Failed to load texture" << std::endl;
-    //}
-    //stbi_image_free(data);
-
-    //
-    //// texture 2
-    //glGenTextures(1, &texture2);
-    //glBindTexture(GL_TEXTURE_2D, texture2);
-    //// set the texture wrapping parameters
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    //// set texture filtering parameters
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    //// load image, create texture and generate mipmaps
-    //const char* texSource2 = "./src/Renderer/Textures/awesomeface.png";
-    //data = stbi_load(texSource2, &width, &height, &nrChannels, 0);
-    //if (data)
-    //{
-    //    // note that the awesomeface.png has transparency and thus an alpha channel, so make sure to tell OpenGL the data type is of GL_RGBA
-    //    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-    //    glGenerateMipmap(GL_TEXTURE_2D);
-    //}
-    //else
-    //{
-    //    std::cout << "Failed to load texture" << std::endl;
-    //}
-    //stbi_image_free(data);
-
-
-
-    // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
-    //defaultShader.use(); // don't forget to activate/use the shader before setting uniforms!
-    //defaultShader.setInt("texture1", 0);
-    //defaultShader.setInt("texture2", 1);
-
 
     // The call to glVertexAttribPointer registered VBO so can safely unbind this buffer
     //glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -224,8 +100,9 @@ int main()
     // Uncomment to change to wireframe mode
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+    //Hairnode testing
+    // ------
     //HairNode hairnode1(glm::vec3(0, 2, 4));
-
     //hairnode1.ApplyForce(glm::vec3(0, 2, 4));
     //std::cout << "next acc:" << hairnode1.acceleration.x << hairnode1.acceleration.y << hairnode1.acceleration.z << std::endl;
 
