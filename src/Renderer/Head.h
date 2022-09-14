@@ -19,6 +19,8 @@
 #include <iostream>
 #include <map>
 #include <vector>
+
+#include "../Hair/Hair.h"
 using namespace std;
 
 class Head
