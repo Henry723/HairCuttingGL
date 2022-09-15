@@ -10,11 +10,11 @@
 #include<iostream>
 
 using namespace std;
-using glm::vec3;
+using namespace glm;
 
 // Global properties for the window size
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 600;
+const int SCREEN_WIDTH = 1920;
+const int SCREEN_HEIGHT = 1080;
 
 //Function decarations
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -31,6 +31,8 @@ float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 float frameTime = 0.0f;
 int nFrames = 0; //counting frame rate
+
+Hair* hair1ptr;
 
 int main() 
 {
@@ -89,9 +91,9 @@ int main()
     const char* hairTexSource = "./src/Renderer/Textures/hair01.png";
 
     Head headModel(headModelSrc, headTexSrc);
+    //Hair hair1(vec3(0, 0, 0), vec3(0, 0, 0), vec3(0, 0, 0), vec3(0, 0, 0), 1, hairTexSource);
+    
     Hair hair1(vec3(0, 0, 0), vec3(0, 0, 0), vec3(0, 0, 0), vec3(0, 0, 0), 1, hairTexSource);
-
-
     // The call to glVertexAttribPointer registered VBO so can safely unbind this buffer
     //glBindBuffer(GL_ARRAY_BUFFER, 0);
     //Can unbind VAO so other other VAO call will not modify this VAO
@@ -105,7 +107,10 @@ int main()
     //HairNode hairnode1(glm::vec3(0, 2, 4));
     //hairnode1.ApplyForce(glm::vec3(0, 2, 4));
     //std::cout << "next acc:" << hairnode1.acceleration.x << hairnode1.acceleration.y << hairnode1.acceleration.z << std::endl;
-
+    //hair1 = nullptr;
+    //delete hair1ptr;
+    //std::cout << "next acc:" << std::endl;
+    // 
     // 5. Create our rendering Loop
     //      We have to let the application to keep looping until we closes the window.
     while (!glfwWindowShouldClose(window))
@@ -158,27 +163,26 @@ int main()
         //    glDrawArrays(GL_TRIANGLES, 0, 36);
         //}
         defaultShader.use();
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0, -1, 0));
-        model = glm::scale(model, glm::vec3(0.05, 0.05, 0.05));
+        glm::mat4 model = mat4(1.0f);
+        model = glm::translate(model, vec3(0, -1, 0));
+        model = glm::scale(model, vec3(0.05, 0.05, 0.05));
         defaultShader.setMat4("projection", projection);
         defaultShader.setMat4("view", view);
         defaultShader.setMat4("model", model);
         headModel.Draw(defaultShader,headModel.textureID);
-
         // Draw hairs
         hairShader.use();
-        model = glm::mat4(1.0f);
+        model = mat4(1.0f);
         hairShader.setMat4("projection", projection);
         hairShader.setMat4("view", view);
-
+        
         // Place hair in scene
         glBindVertexArray(hair1.hairVAO);
         glBindTexture(GL_TEXTURE_2D, hair1.hairTextureID);
         for (unsigned int i = 0; i < hair1.hairPosition.size(); i++)
         {
-            model = glm::mat4(1.0f);
-            model = glm::translate(model, hair1.hairPosition[i]);
+            model = mat4(1.0f);
+            model = translate(model, hair1.hairPosition[i]);
             //model = glm::translate(model, hair1.hairPosition[i] + sin(glm::vec3(glfwGetTime(), 0, 0)));
             hairShader.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 6);
