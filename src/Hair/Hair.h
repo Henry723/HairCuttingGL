@@ -65,5 +65,6 @@ private:
 
     void Setup();
 	void LoadTexture(const char* texSource, unsigned int& textureID);
+    void CubicBezier(vec3 contolPos1, vec3 contolPos2, vec3 contolPos3, vec3 contolPos4, float t);
 	void GenBezNode();
 };
