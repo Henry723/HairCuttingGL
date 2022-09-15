@@ -20,17 +20,19 @@ const int SCREEN_HEIGHT = 1080;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 
-// stores how much we're seeing of either texture
-float mixValue = 0.2f;
-
 // Camera
 Camera camera = Camera();
 
-// timing
-float deltaTime = 0.0f;	// time between current frame and last frame
-float lastFrame = 0.0f;
-float frameTime = 0.0f;
-int nFrames = 0; //counting frame rate
+// Timing
+float currentTime = 0.0;
+float prevTime = 0.0;
+float deltaTime = 0.0;	// time between current frame and last frame
+float frameTime = 0.0;
+unsigned int nFrames = 0; //counting frame rate
+unsigned int frameCount = 0; // For average
+float totalFPS = 0;
+
+bool usingVsync = false;
 
 int main() 
 {
@@ -109,26 +111,58 @@ int main()
     // 
     // 5. Create our rendering Loop
     //      We have to let the application to keep looping until we closes the window.
+
+    //Disable vsync and obtain uncapped frame rate, comment to turn on vsync and limit to monitor refresh rate.
+    if(!usingVsync)
+        glfwSwapInterval(0);
+
     while (!glfwWindowShouldClose(window))
     {
-        float currentFrame = glfwGetTime();
-        deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
+        currentTime = (float)glfwGetTime();
+        deltaTime = currentTime - prevTime;
 
         //Frame counter
         nFrames++;
-        frameTime += deltaTime;
-        if (frameTime >= 1.0) 
-        {
-         // print and reset timer when total time reaches above 1 sec
-            //printf("FPS: %f\n",  double(nFrames));
-            nFrames = 0;
-            frameTime = 0;
-        }
-        //------
+        frameCount++;
 
-        // Inputs
-        processInput(window);
+        // Inputs when turning vsync on
+        if (usingVsync) {
+            // Print fps
+            std::string FPS = std::to_string((int)round((1.0 / deltaTime) * nFrames));
+            std::string ms = std::to_string((deltaTime / nFrames) * 1000);
+            totalFPS += (1.0 / deltaTime) * nFrames;
+            std::string avgFPS = std::to_string(totalFPS /frameCount);
+            std::string newTitle = "HairCuttingGL " + FPS + "FPS / " + ms + "ms - Average FPS: " + avgFPS + "FPS";
+            glfwSetWindowTitle(window, newTitle.c_str());
+
+            prevTime = currentTime;
+            nFrames = 0;
+
+            // Inputs when turning vsync off, should be fine with capped frames
+            processInput(window);
+            
+        } 
+        else
+        {
+            totalFPS += (1.0 / deltaTime) * nFrames;
+            //Limit frames for inputs physics update etc...
+            if (deltaTime >= 1.0 / 60)
+            {
+                // Print fps
+                std::string FPS = std::to_string((int)round((1.0 / deltaTime) * nFrames));
+                std::string ms = std::to_string((deltaTime / nFrames) * 1000);
+                std::string avgFPS = std::to_string(totalFPS / frameCount);
+                std::string newTitle = "HairCuttingGL " + FPS + "FPS / " + ms + "ms - Average FPS: " + avgFPS + "FPS";
+                glfwSetWindowTitle(window, newTitle.c_str());
+
+                prevTime = currentTime;
+                nFrames = 0;
+
+                // Inputs when turning vsync on
+                processInput(window);
+            }
+        }
+            
 
         // Clear the screen with the color of our choice and clear
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
