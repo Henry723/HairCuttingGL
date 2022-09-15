@@ -32,8 +32,6 @@ float lastFrame = 0.0f;
 float frameTime = 0.0f;
 int nFrames = 0; //counting frame rate
 
-Hair* hair1ptr;
-
 int main() 
 {
     // 1. glfw: initializes glfw.
@@ -91,9 +89,7 @@ int main()
     const char* hairTexSource = "./src/Renderer/Textures/hair01.png";
 
     Head headModel(headModelSrc, headTexSrc);
-    //Hair hair1(vec3(0, 0, 0), vec3(0, 0, 0), vec3(0, 0, 0), vec3(0, 0, 0), 1, hairTexSource);
-    
-    Hair hair1(vec3(0, 0, 0), vec3(0, 0, 0), vec3(0, 0, 0), vec3(0, 0, 0), 1, hairTexSource);
+    Hair hair1(vec3(0, 0, 0), vec3(0, 1, 0), vec3(1, 1, 0), vec3(1, 0, 0), 100, hairTexSource);
     // The call to glVertexAttribPointer registered VBO so can safely unbind this buffer
     //glBindBuffer(GL_ARRAY_BUFFER, 0);
     //Can unbind VAO so other other VAO call will not modify this VAO
@@ -162,6 +158,8 @@ int main()
         //
         //    glDrawArrays(GL_TRIANGLES, 0, 36);
         //}
+
+        //Draw head
         defaultShader.use();
         glm::mat4 model = mat4(1.0f);
         model = glm::translate(model, vec3(0, -1, 0));
@@ -170,6 +168,7 @@ int main()
         defaultShader.setMat4("view", view);
         defaultShader.setMat4("model", model);
         headModel.Draw(defaultShader,headModel.textureID);
+
         // Draw hairs
         hairShader.use();
         model = mat4(1.0f);
