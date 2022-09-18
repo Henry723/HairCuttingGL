@@ -38,27 +38,45 @@ public:
         vec3(-0.3f, 0.0f, -2.3f),
         vec3(0.5f, 0.0f, -0.6f)
     };
+    vector<HairNode*> hairNodes;
+
+    int nodeCount = 0;
+    int linkCount = 0;
 
 	Hair(vec3 contolPos1, vec3 contolPos2, vec3 contolPos3, vec3 contolPos4, int numLinks, const char* texSource);
 	~Hair();
+    void DrawHair(Shader& shader, unsigned int textureID);
+
 
 private:
-	vector<HairLink> links;
+	vector<HairLink*> hairLinks;
 	vec3 cPos1, cPos2, cPos3, cPos4;
 	int nLinks;
 
     unsigned int hairVBO;
 
+    //float hairVertices[30] = {
+    //    // positions         // texture Coords (swapped y coordinates because texture is flipped upside down)
+    //    0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
+    //    0.0f, -0.5f,  0.0f,  0.0f,  1.0f,
+    //    0.25f, -0.5f,  0.0f,  1.0f,  1.0f,
+
+    //    0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
+    //    0.25f, -0.5f,  0.0f,  1.0f,  1.0f,
+    //    0.25f,  0.5f,  0.0f,  1.0f,  0.0f
+    //};
+
     float hairVertices[30] = {
         // positions         // texture Coords (swapped y coordinates because texture is flipped upside down)
-        0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
-        0.0f, -0.5f,  0.0f,  0.0f,  1.0f,
-        0.25f, -0.5f,  0.0f,  1.0f,  1.0f,
+        0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
+        0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
+        0.5f, -1.0f,  0.0f,  1.0f,  1.0f,
 
-        0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
-        0.25f, -0.5f,  0.0f,  1.0f,  1.0f,
-        0.25f,  0.5f,  0.0f,  1.0f,  0.0f
+        0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
+        0.5f, -1.0f,  0.0f,  1.0f,  1.0f,
+        0.5f,  1.0f,  0.0f,  1.0f,  0.0f
     };
+
     // World space positions of hair
 	float cardWidth = 0;
 	vec3 pos, rot;
@@ -66,5 +84,6 @@ private:
     void Setup();
 	void LoadTexture(const char* texSource, unsigned int& textureID);
     void CubicBezier(vec3 contolPos1, vec3 contolPos2, vec3 contolPos3, vec3 contolPos4, float t);
-	void GenBezNode();
+	void GenBezNode(vec3 nodePos);
+    void LinkNodes(HairNode* node1, HairNode* node2);
 };

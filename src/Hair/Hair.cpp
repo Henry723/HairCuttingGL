@@ -10,8 +10,6 @@ Hair::Hair(vec3 contolPos1, vec3 contolPos2, vec3 contolPos3, vec3 contolPos4, i
 	nLinks = numLinks;
 	cardWidth = 0.0f;
 
-    int count = 0;
-    bool reached = false;
     // Make sure how many nodes to generate when calculating links
     
     //Creates floating point error
@@ -33,29 +31,35 @@ Hair::Hair(vec3 contolPos1, vec3 contolPos2, vec3 contolPos3, vec3 contolPos4, i
     // --------------------------
 
     for (int n = 0; n <= nLinks; n++) {
-        if (n >= nLinks && !reached)
+        if (n >= nLinks)
         {
             CubicBezier(cPos1, cPos2, cPos3, cPos4, 1);
-            reached = true;
         }
         else 
         {
             float t = (float)n / nLinks;
             CubicBezier(cPos1, cPos2, cPos3, cPos4, t);
         }
-        count++;
     }
 
-    printf("Node count: %i\n", count);
-    //CubicBezier(cPos1, cPos2, cPos3, cPos4, 0.5);
+    //printf("Node count: %i\n", count);
     //CubicBezier(vec3(0, 0, 0), vec3(0, 1, 0), vec3(1, 1, 0), vec3(1, 0, 0), 0.5);
-    //GenBezNode();
+
+    //Start normalizing the total hair distance on the group of links and assign their uv's
+
 	Setup();
 	LoadTexture(texSource, hairTextureID);
 }
 
 Hair::~Hair()
 {
+    cout << "Hair destructor was called"<< endl;
+    for (HairNode* node : hairNodes)
+    {
+        nodeCount--;//delete soon
+        delete node;
+    }
+   hairNodes.clear();
 }
 
 void Hair::Setup()
@@ -102,11 +106,6 @@ void Hair::LoadTexture(const char* texSource, unsigned int& textureID)
     stbi_image_free(textureData);
 }
 
-void Hair::GenBezNode()
-{
-
-}
-
 void Hair::CubicBezier(vec3 contolPos1, vec3 contolPos2, vec3 contolPos3, vec3 contolPos4, float t)
 {
     //Squared and cubed time step
@@ -122,8 +121,42 @@ void Hair::CubicBezier(vec3 contolPos1, vec3 contolPos2, vec3 contolPos3, vec3 c
     float x = (mt3 * contolPos1.x) + (3 * t * mt2 * contolPos2.x) + (3 * t2 * mt * contolPos3.x) + (t3 * contolPos4.x);
     float y = (mt3 * contolPos1.y) + (3 * t * mt2 * contolPos2.y) + (3 * t2 * mt * contolPos3.y) + (t3 * contolPos4.y);
     float z = (mt3 * contolPos1.z) + (3 * t * mt2 * contolPos2.z) + (3 * t2 * mt * contolPos3.z) + (t3 * contolPos4.z);
+    //printf("t: %f [x: %f, y: %f, z: %f]\n", t, x, y, z);
 
-    printf("t: %f [x: %f, y: %f, z: %f]\n", t, x, y, z);
+    GenBezNode(vec3(x, y, z));
+}
 
-    GenBezNode();
+void Hair::GenBezNode(vec3 nodePos)
+{
+    //If the first Node at t = 0 is placed, make it pinned and will not affected by physics
+    if (hairNodes.size() == 0) {
+        HairNode* rootNode = new HairNode(nodePos);
+        rootNode->PinHair();
+        hairNodes.push_back(rootNode);
+    }
+    else
+    {
+        size_t currNodeSize = hairNodes.size();
+        // Create nodes that is not root nodes
+        hairNodes.push_back(new HairNode(nodePos));
+
+        //If there are 2 or more nodes, start linking the previous node and the current node
+        if (hairNodes.size() >= 2) {
+            LinkNodes(hairNodes.at((size_t)currNodeSize - 1), hairNodes.at(currNodeSize));
+            linkCount++;//delete soon
+        }
+    }
+    nodeCount++;//delete soon
+}
+
+void Hair::LinkNodes(HairNode* node1, HairNode* node2)
+{
+    hairLinks.push_back(new HairLink(node1, node2, true));
+}
+
+void Hair::DrawHair(Shader& shader, unsigned int textureID)
+{
+    glBindVertexArray(hairVAO);
+    glBindTexture(GL_TEXTURE_2D, hairTextureID);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
 }

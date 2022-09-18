@@ -14,8 +14,7 @@ HairNode::HairNode(vec3 pos)
 	damping = DAMPING;
 	//UpdatePhysics(1);
 
-	vec3 test = vec3(0, 4, 2);
-	printf("Test: (%f, %f, %f) \n", test.x, test.y, test.z);
+	printf("Node: (%f, %f, %f) \n", pos.x, pos.y, pos.z);
 }
 
 HairNode::~HairNode()
@@ -52,10 +51,9 @@ void HairNode::ApplyForce(vec3 force)
 	acceleration += force / mass;
 }
 
-void HairNode::PinHairTo(vec3 rootPos)
+void HairNode::PinHair()
 {
 	isRoot = true;
-	rootPosition = rootPos;
 }
 
 void HairNode::DrawHair()

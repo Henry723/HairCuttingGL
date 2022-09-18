@@ -24,13 +24,13 @@ void processInput(GLFWwindow* window);
 Camera camera = Camera();
 
 // Timing
-float currentTime = 0.0;
-float prevTime = 0.0;
-float deltaTime = 0.0;	// time between current frame and last frame
-float frameTime = 0.0;
+float currentTime = 0.0f;
+float prevTime = 0.0f;
+float deltaTime = 0.0f;	// time between current frame and last frame
+float frameTime = 0.0f;
 unsigned int nFrames = 0; //counting frame rate
 unsigned int frameCount = 0; // For average
-float totalFPS = 0;
+float totalFPS = 0.0f;
 
 bool usingVsync = false;
 
@@ -86,12 +86,19 @@ int main()
     // All the model and texture files for head
     const char* headModelSrc = "./src/Renderer/Models/rabbit.obj";
     const char* headTexSrc = "./src/Renderer/Textures/fur.jpg";
-
+    
     // All the texture file for hair, mesh will generate within
     const char* hairTexSource = "./src/Renderer/Textures/hair01.png";
 
     Head headModel(headModelSrc, headTexSrc);
-    Hair hair1(vec3(0, 0, 0), vec3(0, 1, 0), vec3(1, 1, 0), vec3(1, 0, 0), 100, hairTexSource);
+    //Hair hair1(vec3(0, 0, 0), vec3(0, 1, 0), vec3(1, 1, 0), vec3(1, 0, 0), 100, hairTexSource);
+    Hair* hair1 = new Hair(vec3(0, 0, 0), vec3(0.25f, 1.0f, 0), vec3(0.75, -1, 0), vec3(1, 0, 0), 100, hairTexSource);
+    hair1->hairNodes;
+    std::cout << "Node count: " << hair1->nodeCount << std::endl;
+    std::cout << "Link count: " << hair1->linkCount<< std::endl;
+    //delete hair1;
+    //std::cout << hair1->nodeCount << std::endl;
+
     // The call to glVertexAttribPointer registered VBO so can safely unbind this buffer
     //glBindBuffer(GL_ARRAY_BUFFER, 0);
     //Can unbind VAO so other other VAO call will not modify this VAO
@@ -128,9 +135,9 @@ int main()
         // Inputs when turning vsync on
         if (usingVsync) {
             // Print fps
-            std::string FPS = std::to_string((int)round((1.0 / deltaTime) * nFrames));
+            std::string FPS = std::to_string((int)round((1.0f / deltaTime) * nFrames));
             std::string ms = std::to_string((deltaTime / nFrames) * 1000);
-            totalFPS += (1.0 / deltaTime) * nFrames;
+            totalFPS += (1.0f / deltaTime) * nFrames;
             std::string avgFPS = std::to_string(totalFPS /frameCount);
             std::string newTitle = "HairCuttingGL " + FPS + "FPS / " + ms + "ms - Average FPS: " + avgFPS + "FPS";
             glfwSetWindowTitle(window, newTitle.c_str());
@@ -144,12 +151,12 @@ int main()
         } 
         else
         {
-            totalFPS += (1.0 / deltaTime) * nFrames;
+            totalFPS += (1.0f / deltaTime) * nFrames;
             //Limit frames for inputs physics update etc...
             if (deltaTime >= 1.0 / 60)
             {
                 // Print fps
-                std::string FPS = std::to_string((int)round((1.0 / deltaTime) * nFrames));
+                std::string FPS = std::to_string((int)round((1.0f / deltaTime) * nFrames));
                 std::string ms = std::to_string((deltaTime / nFrames) * 1000);
                 std::string avgFPS = std::to_string(totalFPS / frameCount);
                 std::string newTitle = "HairCuttingGL " + FPS + "FPS / " + ms + "ms - Average FPS: " + avgFPS + "FPS";
@@ -210,15 +217,13 @@ int main()
         hairShader.setMat4("view", view);
         
         // Place hair in scene
-        glBindVertexArray(hair1.hairVAO);
-        glBindTexture(GL_TEXTURE_2D, hair1.hairTextureID);
-        for (unsigned int i = 0; i < hair1.hairPosition.size(); i++)
+        for (unsigned int i = 0; i < hair1->hairPosition.size(); i++)
         {
             model = mat4(1.0f);
-            model = translate(model, hair1.hairPosition[i]);
+            model = translate(model, hair1->hairPosition[i]);
             //model = glm::translate(model, hair1.hairPosition[i] + sin(glm::vec3(glfwGetTime(), 0, 0)));
             hairShader.setMat4("model", model);
-            glDrawArrays(GL_TRIANGLES, 0, 6);
+            hair1->DrawHair(hairShader, hair1->hairTextureID);
         }
 
         // glfw: swap buffers and poll IO events. (eg: key pressed, mouse moved, etc.)
