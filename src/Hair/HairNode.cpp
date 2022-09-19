@@ -14,7 +14,7 @@ HairNode::HairNode(vec3 pos)
 	damping = DAMPING;
 	//UpdatePhysics(1);
 
-	printf("Node: (%f, %f, %f) \n", pos.x, pos.y, pos.z);
+	//printf("Node: (%f, %f, %f) \n", pos.x, pos.y, pos.z);
 }
 
 HairNode::~HairNode()

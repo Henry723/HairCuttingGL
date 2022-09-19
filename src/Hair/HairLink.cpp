@@ -8,15 +8,61 @@ HairLink::HairLink(HairNode* node1, HairNode* node2, bool showLine)
 	n2 = node2;
 
 	length = GetDistance(node1, node2);
-	std::cout << "Link length: " << length << std::endl;
+	//std::cout << "Link length: " << length << std::endl;
 
-	CreateHairMesh(node1, node2);
 	//std::cout << showLine << std::endl;
 }
 
 HairLink::~HairLink()
 {
 	delete this;
+}
+
+float HairLink::GetLength()
+{
+	return length;
+}
+
+float HairLink::GetStartU()
+{
+	return startU;
+}
+
+float HairLink::GetEndU()
+{
+	return endU;
+}
+
+float HairLink::GetStartV()
+{
+	return startV;
+}
+
+float HairLink::GetEndV()
+{
+	return endV;
+}
+
+HairNode* HairLink::GetNode1()
+{
+	return n1;
+}
+
+HairNode* HairLink::GetNode2()
+{
+	return n2;
+}
+
+void HairLink::SetStartUV(float u, float v)
+{
+	startU = u;
+	startV = v;
+}
+
+void HairLink::SetEndUV(float u, float v)
+{
+	endU = u;
+	endV = v;
 }
 
 float HairLink::GetDistance(HairNode* node1, HairNode* node2)
@@ -34,7 +80,3 @@ void HairLink::Solve()
 	//float
 }
 
-void HairLink::CreateHairMesh(HairNode* node1, HairNode* node2)
-{
-	printf("Creating Hair Mesh \n");
-}

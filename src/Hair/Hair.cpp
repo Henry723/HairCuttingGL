@@ -8,7 +8,7 @@ Hair::Hair(vec3 contolPos1, vec3 contolPos2, vec3 contolPos3, vec3 contolPos4, i
 	cPos4 = contolPos4;
 
 	nLinks = numLinks;
-	cardWidth = 0.0f;
+	cardWidth = 0.5f;
 
     // Make sure how many nodes to generate when calculating links
     
@@ -46,6 +46,9 @@ Hair::Hair(vec3 contolPos1, vec3 contolPos2, vec3 contolPos3, vec3 contolPos4, i
     //CubicBezier(vec3(0, 0, 0), vec3(0, 1, 0), vec3(1, 1, 0), vec3(1, 0, 0), 0.5);
 
     //Start normalizing the total hair distance on the group of links and assign their uv's
+    CreateNormalizedLinks(hairLinks);
+
+    //Push all node data and texture coordinates in hairVerticies
 
 	Setup();
 	LoadTexture(texSource, hairTextureID);
@@ -68,7 +71,9 @@ void Hair::Setup()
     glGenBuffers(1, &hairVBO);
     glBindVertexArray(hairVAO);
     glBindBuffer(GL_ARRAY_BUFFER, hairVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(hairVertices), hairVertices, GL_STATIC_DRAW);
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(hairVertices), hairVertices, GL_STATIC_DRAW);
+
+    glBufferData(GL_ARRAY_BUFFER, v_hairVertices.size() * sizeof(float), &v_hairVertices[0], GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(1);
@@ -154,9 +159,110 @@ void Hair::LinkNodes(HairNode* node1, HairNode* node2)
     hairLinks.push_back(new HairLink(node1, node2, true));
 }
 
+void Hair::CreateNormalizedLinks(vector<HairLink*>& hairLinks)
+{
+    // Total up the lengths for the links for this hair.
+    float totalLength = 0.0f;
+    float u = 0.0f;
+    float v = 0.0f;
+
+    for (HairLink* link : hairLinks)
+    {
+        totalLength += link->GetLength();
+    }
+    //printf("total length: %f\n", totalLength);
+
+    // Assign every link with their starting and ending uvs
+    for (HairLink* link : hairLinks)
+    {
+        link->SetStartUV(0.0f, v);
+        v += link->GetLength() / totalLength;
+        link->SetEndUV(1.0f, v);
+
+        //Create mesh along the way
+       CreateHairMesh(link->GetNode1(),link->GetNode2(), link->GetLength(), cardWidth, link->GetStartU(), link->GetStartV(), link->GetEndU(), link->GetEndV());
+    }
+    //printf("total u: %f\n", u);
+    //printf("total v: %f\n", v);
+
+    //for (int i = 0; i < v_hairVertices.size(); i += 5) {
+    //    printf("%f, %f, %f, %f, %f,\n", v_hairVertices.at(i), v_hairVertices.at(i+1), v_hairVertices.at(i+2), v_hairVertices.at(i+3), v_hairVertices.at(i+4));
+    //}
+}
+
+void Hair::CreateHairMesh(HairNode* node1, HairNode* node2, float length, float width, float startU, float startV, float endU, float endV)
+{
+    //printf("\nCreating Hair Mesh \n");
+    // Extrude using width
+    float halfWidth = width / 2;
+
+    // Extrude towards x axis first to show in front for demo / futher testing
+    // First vertex data (position)
+    v_hairVertices.push_back(node1->position.x - halfWidth);
+    v_hairVertices.push_back(node1->position.y);
+    v_hairVertices.push_back(node1->position.z);
+
+    // First vertex data (uv)
+    v_hairVertices.push_back(startU);
+    v_hairVertices.push_back(startV);
+
+    // Second vertex data (position)
+    v_hairVertices.push_back(node2->position.x - halfWidth);
+    v_hairVertices.push_back(node2->position.y);
+    v_hairVertices.push_back(node2->position.z);
+
+    // Second vertex data (uv)
+    v_hairVertices.push_back(startU);
+    v_hairVertices.push_back(endV);
+
+    // Third vertex data (position)
+    v_hairVertices.push_back(node2->position.x + halfWidth);
+    v_hairVertices.push_back(node2->position.y);
+    v_hairVertices.push_back(node2->position.z);
+
+    // Third vertex data (uv)
+    v_hairVertices.push_back(endU);
+    v_hairVertices.push_back(endV);
+
+    // First vertex data (position)
+    v_hairVertices.push_back(node1->position.x - halfWidth);
+    v_hairVertices.push_back(node1->position.y);
+    v_hairVertices.push_back(node1->position.z);
+
+    // First vertex data (uv)
+    v_hairVertices.push_back(startU);
+    v_hairVertices.push_back(startV);
+
+    // Third vertex data (position)
+    v_hairVertices.push_back(node2->position.x + halfWidth);
+    v_hairVertices.push_back(node2->position.y);
+    v_hairVertices.push_back(node2->position.z);
+
+    // Third vertex data (uv)
+    v_hairVertices.push_back(endU);
+    v_hairVertices.push_back(endV);
+
+    // Fourth vertex data (position)
+    v_hairVertices.push_back(node1->position.x + halfWidth);
+    v_hairVertices.push_back(node1->position.y);
+    v_hairVertices.push_back(node1->position.z);
+
+    // Fourth vertex data (uv)
+    v_hairVertices.push_back(endU);
+    v_hairVertices.push_back(startV);
+}
+
+
 void Hair::DrawHair(Shader& shader, unsigned int textureID)
 {
     glBindVertexArray(hairVAO);
     glBindTexture(GL_TEXTURE_2D, hairTextureID);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    for (int i = 0; i < hairLinks.size() * 6; i += 6) {
+        glDrawArrays(GL_TRIANGLES, i, i + 6);
+    }  
+}
+
+void Hair::PushHairVerticies(float value)
+{
+    v_hairVertices.push_back(value);
 }
