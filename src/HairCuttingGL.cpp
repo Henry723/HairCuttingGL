@@ -94,8 +94,11 @@ int main()
     //Hair hair1(vec3(0, 0, 0), vec3(0, 1, 0), vec3(1, 1, 0), vec3(1, 0, 0), 100, hairTexSource);
     //Hair* hair1 = new Hair(vec3(0, 0, 0), vec3(0.25f, 1.0f, 0), vec3(0.75, -1, 0), vec3(1, 0, 0), 100, hairTexSource);
     Hair* hair1 = new Hair(vec3(0, 1.0f, 0), vec3(0, 0.25f, -1.0f), vec3(0, -0.25f, 1.0f), vec3(0, -1.0f, 0), 10, hairTexSource);
+    hair1->DeleteLink(1);
+    hair1->DeleteLink(1);
+    hair1->DeleteLink(2);
     //hair1->hairNodes;
-    //std::cout << "Node count: " << hair1->nodeCount << std::endl;
+    std::cout << "Node count: " << hair1->nodeCount << std::endl;
     //std::cout << "Link count: " << hair1->linkCount<< std::endl;
     //delete hair1;
     //std::cout << hair1->nodeCount << std::endl;

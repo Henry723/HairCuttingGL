@@ -252,6 +252,12 @@ void Hair::CreateHairMesh(HairNode* node1, HairNode* node2, float length, float 
     v_hairVertices.push_back(startV);
 }
 
+void Hair::UpdateBufferData()
+{
+    glBufferData(GL_ARRAY_BUFFER, v_hairVertices.size() * sizeof(float), &v_hairVertices[0], GL_STATIC_DRAW);
+
+}
+
 
 void Hair::DrawHair(Shader& shader, unsigned int textureID)
 {
@@ -260,6 +266,14 @@ void Hair::DrawHair(Shader& shader, unsigned int textureID)
     for (int i = 0; i < hairLinks.size() * 6; i += 6) {
         glDrawArrays(GL_TRIANGLES, i, i + 6);
     }  
+}
+
+void Hair::DeleteLink(size_t index)
+{
+    delete hairLinks.at(index);
+    hairLinks.erase(hairLinks.begin()+ index);
+    v_hairVertices.erase(v_hairVertices.begin() + index * 30, v_hairVertices.begin() + index * 60);
+    UpdateBufferData();
 }
 
 void Hair::PushHairVerticies(float value)

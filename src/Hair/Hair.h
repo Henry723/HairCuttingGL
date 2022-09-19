@@ -48,7 +48,7 @@ public:
 
     void PushHairVerticies(float value);
     void DrawHair(Shader& shader, unsigned int textureID);
-
+    void DeleteLink(size_t index);
 
 private:
 	vector<HairLink*> hairLinks;
@@ -125,4 +125,5 @@ private:
     void LinkNodes(HairNode* node1, HairNode* node2);
     void CreateNormalizedLinks(vector<HairLink*>& hairLinks);
     void CreateHairMesh(HairNode* node1, HairNode* node2, float length, float width, float startU, float startV, float endU, float endV);
+    void UpdateBufferData();
 };
