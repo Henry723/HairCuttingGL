@@ -93,10 +93,13 @@ int main()
     Head headModel(headModelSrc, headTexSrc);
     //Hair hair1(vec3(0, 0, 0), vec3(0, 1, 0), vec3(1, 1, 0), vec3(1, 0, 0), 100, hairTexSource);
     //Hair* hair1 = new Hair(vec3(0, 0, 0), vec3(0.25f, 1.0f, 0), vec3(0.75, -1, 0), vec3(1, 0, 0), 100, hairTexSource);
-    Hair* hair1 = new Hair(vec3(0, 1.0f, 0), vec3(0, 0.25f, -1.0f), vec3(0, -0.25f, 1.0f), vec3(0, -1.0f, 0), 10, hairTexSource);
+    
+    Hair* hair1 = new Hair(vec3(0, 1.0f, 0), vec3(0, 0.25f, 1.0f), vec3(0, -0.25f, -1.0f), vec3(0, -1.0f, 0), 10, hairTexSource);
+    Hair* hair2 = new Hair(vec3(0, 1.0f, 0), vec3(0, 0.25f, 1.0f), vec3(0, -0.25f, -1.0f), vec3(0, -1.0f, 0), 3, hairTexSource);
+
     hair1->DeleteLink(1);
-    hair1->DeleteLink(1);
-    hair1->DeleteLink(2);
+    hair2->DeleteLink(1);
+    //hair1->DeleteLink(2);
     //hair1->hairNodes;
     std::cout << "Node count: " << hair1->nodeCount << std::endl;
     //std::cout << "Link count: " << hair1->linkCount<< std::endl;
@@ -224,11 +227,17 @@ int main()
         for (unsigned int i = 0; i < hair1->hairPosition.size(); i++)
         {
             model = mat4(1.0f);
-            model = translate(model, hair1->hairPosition[i]);
-            //model = glm::translate(model, hair1.hairPosition[i] + sin(glm::vec3(glfwGetTime(), 0, 0)));
+            //model = translate(model, hair1->hairPosition[i]);
+            model = glm::translate(model, hair1->hairPosition[i] + sin(glm::vec3(glfwGetTime(), 0, 0)));
             hairShader.setMat4("model", model);
             hair1->DrawHair(hairShader, hair1->hairTextureID);
         }
+
+        // Hair 2
+        model = mat4(1.0f);
+        model = translate(model, vec3(1.5f, 2.0f, 0.51f) + sin(glm::vec3(glfwGetTime(), 0, 0)));
+        hairShader.setMat4("model", model);
+        hair2->DrawHair(hairShader, hair2->hairTextureID);
 
         // glfw: swap buffers and poll IO events. (eg: key pressed, mouse moved, etc.)
         glfwSwapBuffers(window);

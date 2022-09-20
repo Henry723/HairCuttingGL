@@ -254,8 +254,8 @@ void Hair::CreateHairMesh(HairNode* node1, HairNode* node2, float length, float 
 
 void Hair::UpdateBufferData()
 {
+    glBindBuffer(GL_ARRAY_BUFFER, hairVBO);
     glBufferData(GL_ARRAY_BUFFER, v_hairVertices.size() * sizeof(float), &v_hairVertices[0], GL_STATIC_DRAW);
-
 }
 
 
