@@ -8,10 +8,8 @@ Hair::Hair(vec3 contolPos1, vec3 contolPos2, vec3 contolPos3, vec3 contolPos4, i
 	cPos4 = contolPos4;
 
 	nLinks = numLinks;
-	cardWidth = 0.0f;
+	cardWidth = 0.5f;
 
-    int count = 0;
-    bool reached = false;
     // Make sure how many nodes to generate when calculating links
     
     //Creates floating point error
@@ -33,29 +31,38 @@ Hair::Hair(vec3 contolPos1, vec3 contolPos2, vec3 contolPos3, vec3 contolPos4, i
     // --------------------------
 
     for (int n = 0; n <= nLinks; n++) {
-        if (n >= nLinks && !reached)
+        if (n >= nLinks)
         {
             CubicBezier(cPos1, cPos2, cPos3, cPos4, 1);
-            reached = true;
         }
         else 
         {
             float t = (float)n / nLinks;
             CubicBezier(cPos1, cPos2, cPos3, cPos4, t);
         }
-        count++;
     }
 
-    printf("Node count: %i\n", count);
-    //CubicBezier(cPos1, cPos2, cPos3, cPos4, 0.5);
+    //printf("Node count: %i\n", count);
     //CubicBezier(vec3(0, 0, 0), vec3(0, 1, 0), vec3(1, 1, 0), vec3(1, 0, 0), 0.5);
-    //GenBezNode();
+
+    //Start normalizing the total hair distance on the group of links and assign their uv's
+    CreateNormalizedLinks(hairLinks);
+
+    //Push all node data and texture coordinates in hairVerticies
+
 	Setup();
 	LoadTexture(texSource, hairTextureID);
 }
 
 Hair::~Hair()
 {
+    cout << "Hair destructor was called"<< endl;
+    for (HairNode* node : hairNodes)
+    {
+        nodeCount--;//delete soon
+        delete node;
+    }
+   hairNodes.clear();
 }
 
 void Hair::Setup()
@@ -64,7 +71,9 @@ void Hair::Setup()
     glGenBuffers(1, &hairVBO);
     glBindVertexArray(hairVAO);
     glBindBuffer(GL_ARRAY_BUFFER, hairVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(hairVertices), hairVertices, GL_STATIC_DRAW);
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(hairVertices), hairVertices, GL_STATIC_DRAW);
+
+    glBufferData(GL_ARRAY_BUFFER, v_hairVertices.size() * sizeof(float), &v_hairVertices[0], GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(1);
@@ -102,11 +111,6 @@ void Hair::LoadTexture(const char* texSource, unsigned int& textureID)
     stbi_image_free(textureData);
 }
 
-void Hair::GenBezNode()
-{
-
-}
-
 void Hair::CubicBezier(vec3 contolPos1, vec3 contolPos2, vec3 contolPos3, vec3 contolPos4, float t)
 {
     //Squared and cubed time step
@@ -122,8 +126,157 @@ void Hair::CubicBezier(vec3 contolPos1, vec3 contolPos2, vec3 contolPos3, vec3 c
     float x = (mt3 * contolPos1.x) + (3 * t * mt2 * contolPos2.x) + (3 * t2 * mt * contolPos3.x) + (t3 * contolPos4.x);
     float y = (mt3 * contolPos1.y) + (3 * t * mt2 * contolPos2.y) + (3 * t2 * mt * contolPos3.y) + (t3 * contolPos4.y);
     float z = (mt3 * contolPos1.z) + (3 * t * mt2 * contolPos2.z) + (3 * t2 * mt * contolPos3.z) + (t3 * contolPos4.z);
+    //printf("t: %f [x: %f, y: %f, z: %f]\n", t, x, y, z);
 
-    printf("t: %f [x: %f, y: %f, z: %f]\n", t, x, y, z);
+    GenBezNode(vec3(x, y, z));
+}
 
-    GenBezNode();
+void Hair::GenBezNode(vec3 nodePos)
+{
+    //If the first Node at t = 0 is placed, make it pinned and will not affected by physics
+    if (hairNodes.size() == 0) {
+        HairNode* rootNode = new HairNode(nodePos);
+        rootNode->PinHair();
+        hairNodes.push_back(rootNode);
+    }
+    else
+    {
+        size_t currNodeSize = hairNodes.size();
+        // Create nodes that is not root nodes
+        hairNodes.push_back(new HairNode(nodePos));
+
+        //If there are 2 or more nodes, start linking the previous node and the current node
+        if (hairNodes.size() >= 2) {
+            LinkNodes(hairNodes.at((size_t)currNodeSize - 1), hairNodes.at(currNodeSize));
+            linkCount++;//delete soon
+        }
+    }
+    nodeCount++;//delete soon
+}
+
+void Hair::LinkNodes(HairNode* node1, HairNode* node2)
+{
+    hairLinks.push_back(new HairLink(node1, node2, true));
+}
+
+void Hair::CreateNormalizedLinks(vector<HairLink*>& hairLinks)
+{
+    // Total up the lengths for the links for this hair.
+    float totalLength = 0.0f;
+    float u = 0.0f;
+    float v = 0.0f;
+
+    for (HairLink* link : hairLinks)
+    {
+        totalLength += link->GetLength();
+    }
+    //printf("total length: %f\n", totalLength);
+
+    // Assign every link with their starting and ending uvs
+    for (HairLink* link : hairLinks)
+    {
+        link->SetStartUV(0.0f, v);
+        v += link->GetLength() / totalLength;
+        link->SetEndUV(1.0f, v);
+
+        //Create mesh along the way
+       CreateHairMesh(link->GetNode1(),link->GetNode2(), link->GetLength(), cardWidth, link->GetStartU(), link->GetStartV(), link->GetEndU(), link->GetEndV());
+    }
+    //printf("total u: %f\n", u);
+    //printf("total v: %f\n", v);
+
+    //for (int i = 0; i < v_hairVertices.size(); i += 5) {
+    //    printf("%f, %f, %f, %f, %f,\n", v_hairVertices.at(i), v_hairVertices.at(i+1), v_hairVertices.at(i+2), v_hairVertices.at(i+3), v_hairVertices.at(i+4));
+    //}
+}
+
+void Hair::CreateHairMesh(HairNode* node1, HairNode* node2, float length, float width, float startU, float startV, float endU, float endV)
+{
+    //printf("\nCreating Hair Mesh \n");
+    // Extrude using width
+    float halfWidth = width / 2;
+
+    // Extrude towards x axis first to show in front for demo / futher testing
+    // First vertex data (position)
+    v_hairVertices.push_back(node1->position.x - halfWidth);
+    v_hairVertices.push_back(node1->position.y);
+    v_hairVertices.push_back(node1->position.z);
+
+    // First vertex data (uv)
+    v_hairVertices.push_back(startU);
+    v_hairVertices.push_back(startV);
+
+    // Second vertex data (position)
+    v_hairVertices.push_back(node2->position.x - halfWidth);
+    v_hairVertices.push_back(node2->position.y);
+    v_hairVertices.push_back(node2->position.z);
+
+    // Second vertex data (uv)
+    v_hairVertices.push_back(startU);
+    v_hairVertices.push_back(endV);
+
+    // Third vertex data (position)
+    v_hairVertices.push_back(node2->position.x + halfWidth);
+    v_hairVertices.push_back(node2->position.y);
+    v_hairVertices.push_back(node2->position.z);
+
+    // Third vertex data (uv)
+    v_hairVertices.push_back(endU);
+    v_hairVertices.push_back(endV);
+
+    // First vertex data (position)
+    v_hairVertices.push_back(node1->position.x - halfWidth);
+    v_hairVertices.push_back(node1->position.y);
+    v_hairVertices.push_back(node1->position.z);
+
+    // First vertex data (uv)
+    v_hairVertices.push_back(startU);
+    v_hairVertices.push_back(startV);
+
+    // Third vertex data (position)
+    v_hairVertices.push_back(node2->position.x + halfWidth);
+    v_hairVertices.push_back(node2->position.y);
+    v_hairVertices.push_back(node2->position.z);
+
+    // Third vertex data (uv)
+    v_hairVertices.push_back(endU);
+    v_hairVertices.push_back(endV);
+
+    // Fourth vertex data (position)
+    v_hairVertices.push_back(node1->position.x + halfWidth);
+    v_hairVertices.push_back(node1->position.y);
+    v_hairVertices.push_back(node1->position.z);
+
+    // Fourth vertex data (uv)
+    v_hairVertices.push_back(endU);
+    v_hairVertices.push_back(startV);
+}
+
+void Hair::UpdateBufferData()
+{
+    glBindBuffer(GL_ARRAY_BUFFER, hairVBO);
+    glBufferData(GL_ARRAY_BUFFER, v_hairVertices.size() * sizeof(float), &v_hairVertices[0], GL_STATIC_DRAW);
+}
+
+
+void Hair::DrawHair(Shader& shader, unsigned int textureID)
+{
+    glBindVertexArray(hairVAO);
+    glBindTexture(GL_TEXTURE_2D, hairTextureID);
+    for (int i = 0; i < hairLinks.size() * 6; i += 6) {
+        glDrawArrays(GL_TRIANGLES, i, i + 6);
+    }  
+}
+
+void Hair::DeleteLink(size_t index)
+{
+    delete hairLinks.at(index);
+    hairLinks.erase(hairLinks.begin()+ index);
+    v_hairVertices.erase(v_hairVertices.begin() + index * 30, v_hairVertices.begin() + index * 60);
+    UpdateBufferData();
+}
+
+void Hair::PushHairVerticies(float value)
+{
+    v_hairVertices.push_back(value);
 }

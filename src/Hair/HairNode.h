@@ -21,7 +21,6 @@ public:
 	float damping; //coefficent k
 
 	bool isRoot = false; //The root hair will not going to move/affected by gravity + other forces
-	vec3 rootPosition;
 
 	HairNode() = default;
 	HairNode(vec3 pos);
@@ -31,7 +30,7 @@ public:
 	void UpdatePhysics(float timeStep);
 	void ApplyForce(vec3 force);
 
-	void PinHairTo(vec3 rootPos);
+	void PinHair();
 
 	void DrawHair();
 	
