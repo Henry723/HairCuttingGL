@@ -32,6 +32,10 @@ unsigned int nFrames = 0; //counting frame rate
 unsigned int frameCount = 0; // For average
 float totalFPS = 0.0f;
 
+//For physics
+int fixedFPS = 60;
+float fixedFrameS = (float)1 / fixedFPS;
+
 bool usingVsync = false;
 
 int main() 
@@ -160,7 +164,7 @@ int main()
         {
             totalFPS += (1.0f / deltaTime) * nFrames;
             //Limit frames for inputs physics update etc...
-            if (deltaTime >= 1.0 / 60)
+            if (deltaTime >= fixedFrameS) //limit to 60 fps, and check if delta time is at around 16.67ms per frame.
             {
                 // Print fps
                 std::string FPS = std::to_string((int)round((1.0f / deltaTime) * nFrames));
@@ -171,6 +175,10 @@ int main()
 
                 prevTime = currentTime;
                 nFrames = 0;
+
+                // Process physics
+                //hair1->UpdatePhysics(fixedFrameS);
+                //hair2->UpdatePhysics(fixedFrameS);
 
                 // Inputs when turning vsync on
                 processInput(window);
@@ -228,14 +236,14 @@ int main()
         {
             model = mat4(1.0f);
             //model = translate(model, hair1->hairPosition[i]);
-            model = glm::translate(model, hair1->hairPosition[i] + sin(glm::vec3(glfwGetTime(), 0, 0)));
+            model = glm::translate(model, hair1->hairPosition[i]);
             hairShader.setMat4("model", model);
             hair1->DrawHair(hairShader, hair1->hairTextureID);
         }
 
         // Hair 2
         model = mat4(1.0f);
-        model = translate(model, vec3(1.5f, 2.0f, 0.51f) + sin(glm::vec3(glfwGetTime(), 0, 0)));
+        model = translate(model, vec3(1.5f, 2.0f, 0.51f));
         hairShader.setMat4("model", model);
         hair2->DrawHair(hairShader, hair2->hairTextureID);
 

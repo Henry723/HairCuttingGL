@@ -40,8 +40,8 @@ public:
     };
     vector<HairNode*> hairNodes;
 
-    int nodeCount = 0;
-    int linkCount = 0;
+    int nodeCount = 0;//delete soon
+    int linkCount = 0;//delete soon
 
 	Hair(vec3 contolPos1, vec3 contolPos2, vec3 contolPos3, vec3 contolPos4, int numLinks, const char* texSource);
 	~Hair();
@@ -49,6 +49,8 @@ public:
     void PushHairVerticies(float value);
     void DrawHair(Shader& shader, unsigned int textureID);
     void DeleteLink(size_t index);
+
+    void UpdatePhysics(float fixedDeltaTimeS);
 
 private:
 	vector<HairLink*> hairLinks;
@@ -125,5 +127,6 @@ private:
     void LinkNodes(HairNode* node1, HairNode* node2);
     void CreateNormalizedLinks(vector<HairLink*>& hairLinks);
     void CreateHairMesh(HairNode* node1, HairNode* node2, float length, float width, float startU, float startV, float endU, float endV);
+    void UpdateHairMesh(HairNode* node1, HairNode* node2, float width);
     void UpdateBufferData();
 };

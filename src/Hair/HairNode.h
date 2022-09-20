@@ -20,7 +20,7 @@ public:
 	float mass;
 	float damping; //coefficent k
 
-	bool isRoot = false; //The root hair will not going to move/affected by gravity + other forces
+	bool isPinned = false; //The root hair will not going to move/affected by gravity + other forces
 
 	HairNode() = default;
 	HairNode(vec3 pos);

@@ -163,7 +163,7 @@ void Hair::CreateNormalizedLinks(vector<HairLink*>& hairLinks)
 {
     // Total up the lengths for the links for this hair.
     float totalLength = 0.0f;
-    float u = 0.0f;
+    //float u = 0.0f;
     float v = 0.0f;
 
     for (HairLink* link : hairLinks)
@@ -252,12 +252,31 @@ void Hair::CreateHairMesh(HairNode* node1, HairNode* node2, float length, float 
     v_hairVertices.push_back(startV);
 }
 
+
 void Hair::UpdateBufferData()
 {
     glBindBuffer(GL_ARRAY_BUFFER, hairVBO);
     glBufferData(GL_ARRAY_BUFFER, v_hairVertices.size() * sizeof(float), &v_hairVertices[0], GL_STATIC_DRAW);
 }
 
+void Hair::UpdateHairMesh(HairNode* node1, HairNode* node2, float width)
+{
+    // Extrude using width
+    float halfWidth = width / 2;
+
+    // Only updates the position data for now
+    for (int i = 0; i < v_hairVertices.size(); i += 30) {
+        // First vertex position
+        v_hairVertices.at(i) = (node1->position.x + halfWidth);
+        v_hairVertices.at((size_t)i + 1) = node1->position.y;
+        v_hairVertices.at((size_t)i + 2) = node1->position.z;
+
+        // Second vertex position
+        v_hairVertices.at((size_t)i + 5) = (node2->position.x + halfWidth);
+        v_hairVertices.at((size_t)i + 6) = node2->position.y;
+        v_hairVertices.at((size_t)i + 7) = node2->position.z;
+    }
+}
 
 void Hair::DrawHair(Shader& shader, unsigned int textureID)
 {
@@ -280,3 +299,19 @@ void Hair::PushHairVerticies(float value)
 {
     v_hairVertices.push_back(value);
 }
+
+//Hair physics 
+void Hair::UpdatePhysics(float fixedDeltaTimeS)
+{
+    for (int i = 0; i < hairNodes.size(); i++) {
+        HairNode* hairNode = (HairNode*)hairNodes.at(i);
+        hairNode->UpdatePhysics(fixedDeltaTimeS);
+    }
+    for (HairLink* link : hairLinks)
+    {
+        //Update mesh along the way
+        UpdateHairMesh(link->GetNode1(), link->GetNode2(), cardWidth);
+    }
+    UpdateBufferData();
+}
+
