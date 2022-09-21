@@ -142,8 +142,11 @@ void Hair::GenBezNode(vec3 nodePos)
     else
     {
         size_t currNodeSize = hairNodes.size();
+
         // Create nodes that is not root nodes
-        hairNodes.push_back(new HairNode(nodePos));
+        HairNode* hairNode = new HairNode(nodePos);
+        hairNode->PinHair();
+        hairNodes.push_back(hairNode);
 
         //If there are 2 or more nodes, start linking the previous node and the current node
         if (hairNodes.size() >= 2) {
@@ -320,7 +323,13 @@ void Hair::DeleteLink(size_t index)
 {
     delete hairLinks.at(index);
     hairLinks.erase(hairLinks.begin()+ index);
-    v_hairVertices.erase(v_hairVertices.begin() + index * 30, v_hairVertices.begin() + index * 60);
+    v_hairVertices.erase(v_hairVertices.begin() + index * MESH_ATTRIBUTE_SIZE, v_hairVertices.begin() + (index * MESH_ATTRIBUTE_SIZE) + MESH_ATTRIBUTE_SIZE);
+
+    //Nodes always have 1 more than links
+    for (size_t i = index + 1; i < hairNodes.size(); i++) {
+        HairNode* hairNode = (HairNode*)hairNodes.at(i);
+        hairNode->UnpinHair();
+    }
     UpdateBufferData();
 }
 

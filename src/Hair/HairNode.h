@@ -31,6 +31,7 @@ public:
 	void ApplyForce(vec3 force);
 
 	void PinHair();
+	void UnpinHair();
 
 	void DrawHair();
 	

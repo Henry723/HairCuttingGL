@@ -71,6 +71,11 @@ void HairNode::PinHair()
 	isPinned = true;
 }
 
+void HairNode::UnpinHair()
+{
+	isPinned = false;
+}
+
 void HairNode::DrawHair()
 {
 }
