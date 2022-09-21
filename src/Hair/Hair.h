@@ -26,6 +26,8 @@ The more links the hair has the better the curve
 **/
 
 const float cardWidth = 3.0f;
+const static int MESH_ATTRIBUTE_SIZE = 30;
+
 class Hair
 {
 public:
@@ -127,6 +129,6 @@ private:
     void LinkNodes(HairNode* node1, HairNode* node2);
     void CreateNormalizedLinks(vector<HairLink*>& hairLinks);
     void CreateHairMesh(HairNode* node1, HairNode* node2, float length, float width, float startU, float startV, float endU, float endV);
-    void UpdateHairMesh(HairNode* node1, HairNode* node2, float width);
+    void UpdateHairMesh(HairNode* node1, HairNode* node2, float width, int index);
     void UpdateBufferData();
 };

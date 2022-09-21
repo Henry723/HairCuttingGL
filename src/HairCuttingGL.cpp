@@ -177,7 +177,7 @@ int main()
                 nFrames = 0;
 
                 // Process physics
-                //hair1->UpdatePhysics(fixedFrameS);
+                hair1->UpdatePhysics(fixedFrameS);
                 //hair2->UpdatePhysics(fixedFrameS);
 
                 // Inputs when turning vsync on

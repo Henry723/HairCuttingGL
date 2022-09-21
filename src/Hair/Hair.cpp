@@ -259,23 +259,52 @@ void Hair::UpdateBufferData()
     glBufferData(GL_ARRAY_BUFFER, v_hairVertices.size() * sizeof(float), &v_hairVertices[0], GL_STATIC_DRAW);
 }
 
-void Hair::UpdateHairMesh(HairNode* node1, HairNode* node2, float width)
+void Hair::UpdateHairMesh(HairNode* node1, HairNode* node2, float width, int index)
 {
     // Extrude using width
     float halfWidth = width / 2;
 
     // Only updates the position data for now
-    for (int i = 0; i < v_hairVertices.size(); i += 30) {
-        // First vertex position
-        v_hairVertices.at(i) = (node1->position.x + halfWidth);
-        v_hairVertices.at((size_t)i + 1) = node1->position.y;
-        v_hairVertices.at((size_t)i + 2) = node1->position.z;
+    //for (int i = index * MESH_ATTRIBUTE_SIZE; i < v_hairVertices.size(); i += 30) {
+    //    // First vertex position
+    //    v_hairVertices.at(i) = (node1->position.x + halfWidth);
+    //    v_hairVertices.at((size_t)i + 1) = node1->position.y;
+    //    v_hairVertices.at((size_t)i + 2) = node1->position.z;
 
-        // Second vertex position
-        v_hairVertices.at((size_t)i + 5) = (node2->position.x + halfWidth);
-        v_hairVertices.at((size_t)i + 6) = node2->position.y;
-        v_hairVertices.at((size_t)i + 7) = node2->position.z;
-    }
+    //    // Second vertex position
+    //    v_hairVertices.at((size_t)i + 5) = (node2->position.x + halfWidth);
+    //    v_hairVertices.at((size_t)i + 6) = node2->position.y;
+    //    v_hairVertices.at((size_t)i + 7) = node2->position.z;
+    //}
+    // First vertex position
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE) = (node1->position.x - halfWidth);
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 1) = node1->position.y;
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 2) = node1->position.z;
+
+    // Second vertex position
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 5) = (node2->position.x - halfWidth);
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 6) = node2->position.y;
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 7) = node2->position.z;
+
+    // Third vertex position
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 10) = (node2->position.x + halfWidth);
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 11) = node2->position.y;
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 12) = node2->position.z;
+    
+    // First vertex position
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 15) = (node1->position.x - halfWidth);
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 16) = node1->position.y;
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 17) = node1->position.z;
+
+    // Third vertex position
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 20) = (node2->position.x + halfWidth);
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 21) = node2->position.y;
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 22) = node2->position.z;
+
+    // Fourth vertex position
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 25) = (node1->position.x + halfWidth);
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 26) = node1->position.y;
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 27) = node1->position.z;
 }
 
 void Hair::DrawHair(Shader& shader, unsigned int textureID)
@@ -307,11 +336,16 @@ void Hair::UpdatePhysics(float fixedDeltaTimeS)
         HairNode* hairNode = (HairNode*)hairNodes.at(i);
         hairNode->UpdatePhysics(fixedDeltaTimeS);
     }
-    for (HairLink* link : hairLinks)
-    {
+    for (int i = 0; i < hairLinks.size(); i++) {
         //Update mesh along the way
-        UpdateHairMesh(link->GetNode1(), link->GetNode2(), cardWidth);
+        HairLink* hairLink = (HairLink*)hairLinks.at(i);
+        UpdateHairMesh(hairLink->GetNode1(), hairLink->GetNode2(), cardWidth, i);
     }
+    //for (HairLink* link : hairLinks)
+    //{
+    //    //Update mesh along the way
+    //    UpdateHairMesh(link->GetNode1(), link->GetNode2(), cardWidth);
+    //}
     UpdateBufferData();
 }
 
