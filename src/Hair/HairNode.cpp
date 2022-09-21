@@ -12,7 +12,6 @@ HairNode::HairNode(vec3 pos)
 	//cout << "Starting acc:" << acceleration.x << acceleration.y << acceleration.z <<endl;
 	mass = MASS;
 	damping = DAMPING;
-	//UpdatePhysics(1);
 
 	//printf("Node: (%f, %f, %f) \n", pos.x, pos.y, pos.z);
 }
@@ -26,17 +25,33 @@ HairNode::~HairNode()
 //TimeStep should be in seconds.
 void HairNode::UpdatePhysics(float timeStep)
 {
-	//printf("Acc: (%f, %f, %f) \n", acceleration.x, acceleration.y, acceleration.z);
-	ApplyForce(vec3(0, mass * 9.8f, 2));
-	//printf("Next Acc: (%f, %f, %f) \n", acceleration.x, acceleration.y, acceleration.z);
+	if (!isPinned) {
+		//printf("Acc: (%f, %f, %f) \n", acceleration.x, acceleration.y, acceleration.z);
+		ApplyForce(vec3(0, mass * -9.8f, 0));
+		//printf("Next Acc: (%f, %f, %f) \n", acceleration.x, acceleration.y, acceleration.z);
 
-	//position = vec3(2,4,6);
-	//prevPosition = vec3(1, 1, 3);
+		//position = vec3(2,4,6);
+		//prevPosition = vec3(1, 1, 3);
 
-	vec3 velocity = position - prevPosition;
-	//printf("Velocity: (%f, %f, %f) \n", velocity.x, velocity.y, velocity.z);
+		vec3 velocity = position - prevPosition;
 
-	//Dampen
+		//Dampen velocity
+		//printf("Velocity: (%f, %f, %f) \n", velocity.x, velocity.y, velocity.z);
+		velocity *= damping;
+		//printf("Velocity after: (%f, %f, %f) \n", velocity.x, velocity.y, velocity.z);
+
+		float timeStepSq = timeStep * timeStep;
+		// Calculate next position using Verlet Integration
+		vec3 nextposition = position + velocity + 0.5f * acceleration * timeStepSq;
+		//printf("Nextposition: (%f, %f, %f) \n", Nextposition.x, Nextposition.y, Nextposition.z);
+		//printf("\n");
+
+		// Reset variables
+		prevPosition = position;
+		position = nextposition;
+
+		acceleration = vec3(0, 0, 0);
+	}
 }
 
 
@@ -53,7 +68,12 @@ void HairNode::ApplyForce(vec3 force)
 
 void HairNode::PinHair()
 {
-	isRoot = true;
+	isPinned = true;
+}
+
+void HairNode::UnpinHair()
+{
+	isPinned = false;
 }
 
 void HairNode::DrawHair()

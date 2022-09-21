@@ -6,6 +6,7 @@ Hair::Hair(vec3 contolPos1, vec3 contolPos2, vec3 contolPos3, vec3 contolPos4, i
 	cPos2 = contolPos2;
 	cPos3 = contolPos3;
 	cPos4 = contolPos4;
+    hairPosition = contolPos1;
 
 	nLinks = numLinks;
 	cardWidth = 0.5f;
@@ -142,8 +143,11 @@ void Hair::GenBezNode(vec3 nodePos)
     else
     {
         size_t currNodeSize = hairNodes.size();
+
         // Create nodes that is not root nodes
-        hairNodes.push_back(new HairNode(nodePos));
+        HairNode* hairNode = new HairNode(nodePos);
+        hairNode->PinHair();
+        hairNodes.push_back(hairNode);
 
         //If there are 2 or more nodes, start linking the previous node and the current node
         if (hairNodes.size() >= 2) {
@@ -163,7 +167,7 @@ void Hair::CreateNormalizedLinks(vector<HairLink*>& hairLinks)
 {
     // Total up the lengths for the links for this hair.
     float totalLength = 0.0f;
-    float u = 0.0f;
+    //float u = 0.0f;
     float v = 0.0f;
 
     for (HairLink* link : hairLinks)
@@ -252,12 +256,60 @@ void Hair::CreateHairMesh(HairNode* node1, HairNode* node2, float length, float 
     v_hairVertices.push_back(startV);
 }
 
+
 void Hair::UpdateBufferData()
 {
     glBindBuffer(GL_ARRAY_BUFFER, hairVBO);
     glBufferData(GL_ARRAY_BUFFER, v_hairVertices.size() * sizeof(float), &v_hairVertices[0], GL_STATIC_DRAW);
 }
 
+void Hair::UpdateHairMesh(HairNode* node1, HairNode* node2, float width, int index)
+{
+    // Extrude using width
+    float halfWidth = width / 2;
+
+    // Only updates the position data for now
+    //for (int i = index * MESH_ATTRIBUTE_SIZE; i < v_hairVertices.size(); i += 30) {
+    //    // First vertex position
+    //    v_hairVertices.at(i) = (node1->position.x + halfWidth);
+    //    v_hairVertices.at((size_t)i + 1) = node1->position.y;
+    //    v_hairVertices.at((size_t)i + 2) = node1->position.z;
+
+    //    // Second vertex position
+    //    v_hairVertices.at((size_t)i + 5) = (node2->position.x + halfWidth);
+    //    v_hairVertices.at((size_t)i + 6) = node2->position.y;
+    //    v_hairVertices.at((size_t)i + 7) = node2->position.z;
+    //}
+    // First vertex position
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE) = (node1->position.x - halfWidth);
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 1) = node1->position.y;
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 2) = node1->position.z;
+
+    // Second vertex position
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 5) = (node2->position.x - halfWidth);
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 6) = node2->position.y;
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 7) = node2->position.z;
+
+    // Third vertex position
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 10) = (node2->position.x + halfWidth);
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 11) = node2->position.y;
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 12) = node2->position.z;
+    
+    // First vertex position
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 15) = (node1->position.x - halfWidth);
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 16) = node1->position.y;
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 17) = node1->position.z;
+
+    // Third vertex position
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 20) = (node2->position.x + halfWidth);
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 21) = node2->position.y;
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 22) = node2->position.z;
+
+    // Fourth vertex position
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 25) = (node1->position.x + halfWidth);
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 26) = node1->position.y;
+    v_hairVertices.at((size_t)index * MESH_ATTRIBUTE_SIZE + 27) = node1->position.z;
+}
 
 void Hair::DrawHair(Shader& shader, unsigned int textureID)
 {
@@ -270,9 +322,21 @@ void Hair::DrawHair(Shader& shader, unsigned int textureID)
 
 void Hair::DeleteLink(size_t index)
 {
+    //Check if the cut location is out of bounds
+    if (index >= hairLinks.size()) {
+        printf("Out of bounds\n");
+        return;
+    }
+
     delete hairLinks.at(index);
     hairLinks.erase(hairLinks.begin()+ index);
-    v_hairVertices.erase(v_hairVertices.begin() + index * 30, v_hairVertices.begin() + index * 60);
+    v_hairVertices.erase(v_hairVertices.begin() + index * MESH_ATTRIBUTE_SIZE, v_hairVertices.begin() + (index * MESH_ATTRIBUTE_SIZE) + MESH_ATTRIBUTE_SIZE);
+
+    //Nodes always have 1 more than links
+    for (size_t i = index + 1; i < hairNodes.size(); i++) {
+        HairNode* hairNode = (HairNode*)hairNodes.at(i);
+        hairNode->UnpinHair();
+    }
     UpdateBufferData();
 }
 
@@ -280,3 +344,24 @@ void Hair::PushHairVerticies(float value)
 {
     v_hairVertices.push_back(value);
 }
+
+//Hair physics 
+void Hair::UpdatePhysics(float fixedDeltaTimeS)
+{
+    for (int i = 0; i < hairNodes.size(); i++) {
+        HairNode* hairNode = (HairNode*)hairNodes.at(i);
+        hairNode->UpdatePhysics(fixedDeltaTimeS);
+    }
+    for (int i = 0; i < hairLinks.size(); i++) {
+        //Update mesh along the way
+        HairLink* hairLink = (HairLink*)hairLinks.at(i);
+        UpdateHairMesh(hairLink->GetNode1(), hairLink->GetNode2(), cardWidth, i);
+    }
+    //for (HairLink* link : hairLinks)
+    //{
+    //    //Update mesh along the way
+    //    UpdateHairMesh(link->GetNode1(), link->GetNode2(), cardWidth);
+    //}
+    UpdateBufferData();
+}
+

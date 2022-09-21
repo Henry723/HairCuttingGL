@@ -26,22 +26,25 @@ The more links the hair has the better the curve
 **/
 
 const float cardWidth = 3.0f;
+const static int MESH_ATTRIBUTE_SIZE = 30;
+
 class Hair
 {
 public:
     unsigned int hairVAO;
     unsigned int hairTextureID;
-    vector<vec3> hairPosition{
-        vec3(-1.5f, 0.0f, -0.48f),
-        vec3(1.5f, 0.0f, 0.51f),
-        vec3(0.5f, 0.0f, 0.7f),
-        vec3(-0.3f, 0.0f, -2.3f),
-        vec3(0.5f, 0.0f, -0.6f)
-    };
+    //vector<vec3> hairPosition{
+    //    vec3(-1.5f, 0.0f, -0.48f),
+    //    vec3(1.5f, 0.0f, 0.51f),
+    //    vec3(0.5f, 0.0f, 0.7f),
+    //    vec3(-0.3f, 0.0f, -2.3f),
+    //    vec3(0.5f, 0.0f, -0.6f)
+    //};
+    vec3 hairPosition;
     vector<HairNode*> hairNodes;
 
-    int nodeCount = 0;
-    int linkCount = 0;
+    int nodeCount = 0;//delete soon
+    int linkCount = 0;//delete soon
 
 	Hair(vec3 contolPos1, vec3 contolPos2, vec3 contolPos3, vec3 contolPos4, int numLinks, const char* texSource);
 	~Hair();
@@ -49,6 +52,8 @@ public:
     void PushHairVerticies(float value);
     void DrawHair(Shader& shader, unsigned int textureID);
     void DeleteLink(size_t index);
+
+    void UpdatePhysics(float fixedDeltaTimeS);
 
 private:
 	vector<HairLink*> hairLinks;
@@ -68,16 +73,16 @@ private:
     //    0.25f,  0.5f,  0.0f,  1.0f,  0.0f
     //};
 
-    float hairVertices[30] = {
-        // positions         // texture Coords (swapped y coordinates because texture is flipped upside down)
-        -0.25f,  1.0f,  0.0f,  0.0f,  0.0f,
-        -0.25f, -1.0f,  0.0f,  0.0f,  1.0f,
-        0.25f, -1.0f,  0.0f,  1.0f,  1.0f,
+    //float hairVertices[30] = {
+    //    // positions         // texture Coords (swapped y coordinates because texture is flipped upside down)
+    //    -0.25f,  1.0f,  0.0f,  0.0f,  0.0f,
+    //    -0.25f, -1.0f,  0.0f,  0.0f,  1.0f,
+    //    0.25f, -1.0f,  0.0f,  1.0f,  1.0f,
 
-        -0.25f,  1.0f,  0.0f,  0.0f,  0.0f,
-        0.25f, -1.0f,  0.0f,  1.0f,  1.0f,
-        0.25f,  1.0f,  0.0f,  1.0f,  0.0f
-    };
+    //    -0.25f,  1.0f,  0.0f,  0.0f,  0.0f,
+    //    0.25f, -1.0f,  0.0f,  1.0f,  1.0f,
+    //    0.25f,  1.0f,  0.0f,  1.0f,  0.0f
+    //};
 
     ////UV here correct
     //float hairVertices[30] = {
@@ -125,5 +130,6 @@ private:
     void LinkNodes(HairNode* node1, HairNode* node2);
     void CreateNormalizedLinks(vector<HairLink*>& hairLinks);
     void CreateHairMesh(HairNode* node1, HairNode* node2, float length, float width, float startU, float startV, float endU, float endV);
+    void UpdateHairMesh(HairNode* node1, HairNode* node2, float width, int index);
     void UpdateBufferData();
 };
