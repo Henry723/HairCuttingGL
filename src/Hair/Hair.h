@@ -33,13 +33,14 @@ class Hair
 public:
     unsigned int hairVAO;
     unsigned int hairTextureID;
-    vector<vec3> hairPosition{
-        vec3(-1.5f, 0.0f, -0.48f),
-        vec3(1.5f, 0.0f, 0.51f),
-        vec3(0.5f, 0.0f, 0.7f),
-        vec3(-0.3f, 0.0f, -2.3f),
-        vec3(0.5f, 0.0f, -0.6f)
-    };
+    //vector<vec3> hairPosition{
+    //    vec3(-1.5f, 0.0f, -0.48f),
+    //    vec3(1.5f, 0.0f, 0.51f),
+    //    vec3(0.5f, 0.0f, 0.7f),
+    //    vec3(-0.3f, 0.0f, -2.3f),
+    //    vec3(0.5f, 0.0f, -0.6f)
+    //};
+    vec3 hairPosition;
     vector<HairNode*> hairNodes;
 
     int nodeCount = 0;//delete soon
@@ -72,16 +73,16 @@ private:
     //    0.25f,  0.5f,  0.0f,  1.0f,  0.0f
     //};
 
-    float hairVertices[30] = {
-        // positions         // texture Coords (swapped y coordinates because texture is flipped upside down)
-        -0.25f,  1.0f,  0.0f,  0.0f,  0.0f,
-        -0.25f, -1.0f,  0.0f,  0.0f,  1.0f,
-        0.25f, -1.0f,  0.0f,  1.0f,  1.0f,
+    //float hairVertices[30] = {
+    //    // positions         // texture Coords (swapped y coordinates because texture is flipped upside down)
+    //    -0.25f,  1.0f,  0.0f,  0.0f,  0.0f,
+    //    -0.25f, -1.0f,  0.0f,  0.0f,  1.0f,
+    //    0.25f, -1.0f,  0.0f,  1.0f,  1.0f,
 
-        -0.25f,  1.0f,  0.0f,  0.0f,  0.0f,
-        0.25f, -1.0f,  0.0f,  1.0f,  1.0f,
-        0.25f,  1.0f,  0.0f,  1.0f,  0.0f
-    };
+    //    -0.25f,  1.0f,  0.0f,  0.0f,  0.0f,
+    //    0.25f, -1.0f,  0.0f,  1.0f,  1.0f,
+    //    0.25f,  1.0f,  0.0f,  1.0f,  0.0f
+    //};
 
     ////UV here correct
     //float hairVertices[30] = {

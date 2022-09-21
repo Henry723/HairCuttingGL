@@ -6,6 +6,7 @@ Hair::Hair(vec3 contolPos1, vec3 contolPos2, vec3 contolPos3, vec3 contolPos4, i
 	cPos2 = contolPos2;
 	cPos3 = contolPos3;
 	cPos4 = contolPos4;
+    hairPosition = contolPos1;
 
 	nLinks = numLinks;
 	cardWidth = 0.5f;

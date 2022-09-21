@@ -98,13 +98,16 @@ int main()
     //Hair hair1(vec3(0, 0, 0), vec3(0, 1, 0), vec3(1, 1, 0), vec3(1, 0, 0), 100, hairTexSource);
     //Hair* hair1 = new Hair(vec3(0, 0, 0), vec3(0.25f, 1.0f, 0), vec3(0.75, -1, 0), vec3(1, 0, 0), 100, hairTexSource);
     
-    Hair* hair1 = new Hair(vec3(0, 1.0f, 0), vec3(0, 0.25f, 1.0f), vec3(0, -0.25f, -1.0f), vec3(0, -1.0f, 0), 10, hairTexSource);
-    Hair* hair2 = new Hair(vec3(0, 1.0f, 0), vec3(0, 0.25f, 1.0f), vec3(0, -0.25f, -1.0f), vec3(0, -1.0f, 0), 3, hairTexSource);
+    Hair* hair1 = new Hair(vec3(0, 0.0f, 0), vec3(0, -0.75f, 1.0f), vec3(0, -1.25f, -1.0f), vec3(0, -2.0f, 0), 10, hairTexSource);
+    Hair* hair2 = new Hair(vec3(1.0f, 0.0f, 0), vec3(1.0f, -0.75f, 1.0f), vec3(1.0f, -1.25f, -1.0f), vec3(1.0f, -2.0f, 0), 3, hairTexSource);
+    Hair* hair3 = new Hair(vec3(-1.0f, 0.0f, 0), vec3(-1.75f, -0.75f, 1.0f), vec3(-2.25f, -1.25f, -1.0f), vec3(-3.0f, -2.0f, 0), 10, hairTexSource);
 
     hair1->DeleteLink(5);
     hair1->DeleteLink(2);
 
-    //hair2->DeleteLink(1);
+    hair2->DeleteLink(1);
+
+    hair3->DeleteLink(4);
     
     //hair1->hairNodes;
     std::cout << "Node count: " << hair1->nodeCount << std::endl;
@@ -180,7 +183,8 @@ int main()
 
                 // Process physics
                 hair1->UpdatePhysics(fixedFrameS);
-                //hair2->UpdatePhysics(fixedFrameS);
+                hair2->UpdatePhysics(fixedFrameS);
+                hair3->UpdatePhysics(fixedFrameS);
 
                 // Inputs when turning vsync on
                 processInput(window);
@@ -220,12 +224,12 @@ int main()
         //Draw head
         defaultShader.use();
         glm::mat4 model = mat4(1.0f);
-        model = glm::translate(model, vec3(0, -1, 0));
+        model = glm::translate(model, vec3(-2.0f, -1, 0));
         model = glm::scale(model, vec3(0.05, 0.05, 0.05));
         defaultShader.setMat4("projection", projection);
         defaultShader.setMat4("view", view);
         defaultShader.setMat4("model", model);
-        headModel.Draw(defaultShader,headModel.textureID);
+        //headModel.Draw(defaultShader,headModel.textureID);
 
         // Draw hairs
         hairShader.use();
@@ -234,20 +238,23 @@ int main()
         hairShader.setMat4("view", view);
         
         // Place hair in scene
-        for (unsigned int i = 0; i < hair1->hairPosition.size(); i++)
-        {
-            model = mat4(1.0f);
-            //model = translate(model, hair1->hairPosition[i]);
-            model = glm::translate(model, hair1->hairPosition[i]);
-            hairShader.setMat4("model", model);
-            hair1->DrawHair(hairShader, hair1->hairTextureID);
-        }
+        model = mat4(1.0f);
+        //model = translate(model, hair1->hairPosition[i]);
+        model = glm::translate(model, hair1->hairPosition);
+        hairShader.setMat4("model", model);
+        hair1->DrawHair(hairShader, hair1->hairTextureID);
 
         // Hair 2
         model = mat4(1.0f);
-        model = translate(model, vec3(1.5f, 2.0f, 0.51f));
+        model = translate(model, hair2->hairPosition);
         hairShader.setMat4("model", model);
         hair2->DrawHair(hairShader, hair2->hairTextureID);
+
+        // Hair 3
+        model = mat4(1.0f);
+        model = translate(model, hair3->hairPosition);
+        hairShader.setMat4("model", model);
+        hair3->DrawHair(hairShader, hair3->hairTextureID);
 
         // glfw: swap buffers and poll IO events. (eg: key pressed, mouse moved, etc.)
         glfwSwapBuffers(window);
