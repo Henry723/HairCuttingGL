@@ -321,6 +321,12 @@ void Hair::DrawHair(Shader& shader, unsigned int textureID)
 
 void Hair::DeleteLink(size_t index)
 {
+    //Check if the cut location is out of bounds
+    if (index >= hairLinks.size()) {
+        printf("Out of bounds\n");
+        return;
+    }
+
     delete hairLinks.at(index);
     hairLinks.erase(hairLinks.begin()+ index);
     v_hairVertices.erase(v_hairVertices.begin() + index * MESH_ATTRIBUTE_SIZE, v_hairVertices.begin() + (index * MESH_ATTRIBUTE_SIZE) + MESH_ATTRIBUTE_SIZE);
