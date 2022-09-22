@@ -19,9 +19,11 @@ const int SCREEN_HEIGHT = 1080;
 //Function decarations
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
+void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
 
 // Camera
 Camera camera = Camera();
+mat4 projection, view;
 
 // Timing
 float currentTime = 0.0f;
@@ -37,6 +39,9 @@ int fixedFPS = 60;
 float fixedFrameS = (float)1 / fixedFPS;
 
 bool usingVsync = false;
+
+//Cursor
+double mouseX, mouseY;
 
 int main() 
 {
@@ -68,6 +73,8 @@ int main()
     glfwMakeContextCurrent(window);
     // Tell GLFW to call this function when doing every screen resize by registering it.
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    glfwSetCursorPosCallback(window, cursor_position_callback);
 
     // 4. glad: load all of OpenGL function pointers
     //      glad manages function pointers to OpenGL
@@ -169,7 +176,7 @@ int main()
         {
             totalFPS += (1.0f / deltaTime) * nFrames;
             //Limit frames for inputs physics update etc...
-            if (deltaTime >= fixedFrameS) //limit to 60 fps, and check if delta time is at around 16.67ms per frame.
+            if (deltaTime >= fixedFrameS) // Limit to 60 fps, and check if delta time is at around 16.67ms per frame.
             {
                 // Print fps
                 std::string FPS = std::to_string((int)round((1.0f / deltaTime) * nFrames));
@@ -192,15 +199,15 @@ int main()
         }
             
 
-        // Clear the screen with the color of our choice and clear
+        // Clear the screen with the color of our choice and clear depth buffer
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        //create perspective matrix and set it in shader
-        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
+        // Create perspective matrix and set it in shader
+        projection = perspective(radians(45.0f), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
 
-        //get view matrix from camera and set it in shader
-        glm::mat4 view = camera.GetViewMatrix();
+        // Get view matrix from camera and set it in shader
+        view = camera.GetViewMatrix();
         
         
         // Debug camera positions
@@ -223,9 +230,9 @@ int main()
 
         //Draw head
         defaultShader.use();
-        glm::mat4 model = mat4(1.0f);
-        model = glm::translate(model, vec3(-2.0f, -1, 0));
-        model = glm::scale(model, vec3(0.05, 0.05, 0.05));
+        mat4 model = mat4(1.0f);
+        model = translate(model, vec3(-2.0f, -1, 0));
+        model = scale(model, vec3(0.05, 0.05, 0.05));
         defaultShader.setMat4("projection", projection);
         defaultShader.setMat4("view", view);
         defaultShader.setMat4("model", model);
@@ -240,7 +247,7 @@ int main()
         // Place hair in scene
         model = mat4(1.0f);
         //model = translate(model, hair1->hairPosition[i]);
-        model = glm::translate(model, hair1->hairPosition);
+        model = translate(model, hair1->hairPosition);
         hairShader.setMat4("model", model);
         hair1->DrawHair(hairShader, hair1->hairTextureID);
 
@@ -311,4 +318,32 @@ void processInput(GLFWwindow* window)
         camera.ProcessKeyboard(Camera_Movement::IN, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
         camera.ProcessKeyboard(Camera_Movement::OUT, deltaTime);
+}
+
+void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
+    mouseX = xpos;
+    mouseY = ypos;
+
+    //printf("xPos: %f, yPos: %f\n", mouseX, mouseY);
+
+    //TODO: Normalized Device Coordinates range [-1:1, -1:1, -1:1]
+    float x = (2.0f * mouseX) / SCREEN_WIDTH - 1.0f;
+    float y = 1.0f - (2.0f * mouseY) / SCREEN_HEIGHT;
+    float z = 1.0f;
+    vec3 rayNDS = vec3(x, y, z);
+    //printf("rayNDS:[%f, %f, %f]\n", x, y, z);
+
+    // 4D Homogeneous Clip Coordinates
+    vec4 rayClip = vec4(rayNDS.x, rayNDS.y, -1.0, 1.0);
+    //printf("rayClip:[%f, %f, %f, %f]\n", rayClip.x, rayClip.y, rayClip.z, rayClip.w);
+
+    // 4D Eye (Camera) Coordinates
+    vec4 rayEye = inverse(projection) * rayClip;
+    rayEye = vec4(rayEye.x, rayEye.y, -1.0, 0.0);
+    //printf("rayEye:[%f, %f, %f, %f]\n", rayEye.x, rayEye.y, rayEye.z, rayEye.w);
+
+    // 4D World Coordinates
+    vec3 rayWorld = vec3((inverse(view) * rayEye).x, (inverse(view) * rayEye).y, (inverse(view) * rayEye).z);
+    rayWorld = normalize(rayWorld);
+    printf("rayWorld:[%f, %f, %f]\n", rayWorld.x, rayWorld.y, rayWorld.z);
 }
