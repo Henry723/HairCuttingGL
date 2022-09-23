@@ -20,6 +20,8 @@ const int SCREEN_HEIGHT = 1080;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
+//void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+void CalculateMouseRay();
 
 // Camera
 Camera camera = Camera();
@@ -42,6 +44,7 @@ bool usingVsync = false;
 
 //Cursor
 double mouseX, mouseY;
+int state;
 
 int main() 
 {
@@ -74,8 +77,11 @@ int main()
     // Tell GLFW to call this function when doing every screen resize by registering it.
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+    // Tell GLFW to call this function cursor is moving in viewport and mouse related functions.
+    //glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
     glfwSetCursorPosCallback(window, cursor_position_callback);
-
+    //glfwSetMouseButtonCallback(window, mouse_button_callback);
+    
     // 4. glad: load all of OpenGL function pointers
     //      glad manages function pointers to OpenGL
     //      This loads the address of OpenGL pointers from GLAD and 
@@ -195,6 +201,12 @@ int main()
 
                 // Inputs when turning vsync on
                 processInput(window);
+
+                state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+                if (state == GLFW_PRESS)
+                {
+                    CalculateMouseRay();
+                }
             }
         }
             
@@ -323,18 +335,25 @@ void processInput(GLFWwindow* window)
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
     mouseX = xpos;
     mouseY = ypos;
-
     //printf("xPos: %f, yPos: %f\n", mouseX, mouseY);
+}
 
+//void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+//{
+//    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+//        CalculateMouseRay();
+//}
+
+void CalculateMouseRay() {
     //TODO: Normalized Device Coordinates range [-1:1, -1:1, -1:1]
-    float x = (2.0f * mouseX) / SCREEN_WIDTH - 1.0f;
-    float y = 1.0f - (2.0f * mouseY) / SCREEN_HEIGHT;
-    float z = 1.0f;
-    vec3 rayNDS = vec3(x, y, z);
-    //printf("rayNDS:[%f, %f, %f]\n", x, y, z);
+    float x = (float)(2.0f * mouseX) / SCREEN_WIDTH - 1.0f;
+    float y = 1.0f - (float)(2.0f * mouseY) / SCREEN_HEIGHT;
+
+    vec2 rayNDS = vec2(x, y);
+    //printf("rayNDS:[%f, %f]\n", x, y);
 
     // 4D Homogeneous Clip Coordinates
-    vec4 rayClip = vec4(rayNDS.x, rayNDS.y, -1.0, 1.0);
+    vec4 rayClip = vec4(rayNDS.x, rayNDS.y, -1.0f, 1.0f);
     //printf("rayClip:[%f, %f, %f, %f]\n", rayClip.x, rayClip.y, rayClip.z, rayClip.w);
 
     // 4D Eye (Camera) Coordinates
@@ -343,7 +362,10 @@ void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
     //printf("rayEye:[%f, %f, %f, %f]\n", rayEye.x, rayEye.y, rayEye.z, rayEye.w);
 
     // 4D World Coordinates
-    vec3 rayWorld = vec3((inverse(view) * rayEye).x, (inverse(view) * rayEye).y, (inverse(view) * rayEye).z);
-    rayWorld = normalize(rayWorld);
-    printf("rayWorld:[%f, %f, %f]\n", rayWorld.x, rayWorld.y, rayWorld.z);
+    vec4 rayWorld = inverse(view) * rayEye;
+
+    // Ray to world coordinates
+    vec3 mouseRay = vec3(rayWorld.x, rayWorld.y, rayWorld.z);
+    mouseRay = normalize(mouseRay);
+    //printf("mouseRay:[%f, %f, %f]\n", mouseRay.x, mouseRay.y, mouseRay.z);
 }
