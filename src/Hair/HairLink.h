@@ -7,6 +7,7 @@ class HairLink
 {
 public:
 	bool showLine = true;
+	int ID;
 
 	HairLink(HairNode* node1, HairNode* node2, bool showLine);
 	~HairLink();
@@ -22,6 +23,7 @@ public:
 
 	void SetStartUV(float u, float v);
 	void SetEndUV(float u, float v);
+	void SetID(int id);
 
 private:
 	HairNode* n1;

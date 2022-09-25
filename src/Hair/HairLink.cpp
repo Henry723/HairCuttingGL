@@ -66,6 +66,11 @@ void HairLink::SetEndUV(float u, float v)
 	endV = v;
 }
 
+void HairLink::SetID(int id)
+{
+	ID = id;
+}
+
 float HairLink::GetDistance(HairNode* node1, HairNode* node2)
 {
 	float diffX = node1->position.x - node2->position.x;

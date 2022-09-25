@@ -115,8 +115,8 @@ int main()
     Hair* hair2 = new Hair(vec3(1.0f, 0.0f, 0), vec3(1.0f, -0.75f, 1.0f), vec3(1.0f, -1.25f, -1.0f), vec3(1.0f, -2.0f, 0), 3, hairTexSource);
     Hair* hair3 = new Hair(vec3(-1.0f, 0.0f, 0), vec3(-1.75f, -0.75f, 1.0f), vec3(-2.25f, -1.25f, -1.0f), vec3(-3.0f, -2.0f, 0), 10, hairTexSource);
 
-    hair1->DeleteLink(5);
     hair1->DeleteLink(2);
+    hair1->DeleteLink(5);
 
     hair2->DeleteLink(1);
 
@@ -128,23 +128,9 @@ int main()
     //delete hair1;
     //std::cout << hair1->nodeCount << std::endl;
 
-    // The call to glVertexAttribPointer registered VBO so can safely unbind this buffer
-    //glBindBuffer(GL_ARRAY_BUFFER, 0);
-    //Can unbind VAO so other other VAO call will not modify this VAO
-    //glBindVertexArray(0);
-
     // Uncomment to change to wireframe mode
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    //Hairnode testing
-    // ------
-    //HairNode hairnode1(glm::vec3(0, 2, 4));
-    //hairnode1.ApplyForce(glm::vec3(0, 2, 4));
-    //std::cout << "next acc:" << hairnode1.acceleration.x << hairnode1.acceleration.y << hairnode1.acceleration.z << std::endl;
-    //hair1 = nullptr;
-    //delete hair1ptr;
-    //std::cout << "next acc:" << std::endl;
-    // 
     // 5. Create our rendering Loop
     //      We have to let the application to keep looping until we closes the window.
 
@@ -210,7 +196,6 @@ int main()
             }
         }
             
-
         // Clear the screen with the color of our choice and clear depth buffer
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -221,12 +206,8 @@ int main()
         // Get view matrix from camera and set it in shader
         view = camera.GetViewMatrix();
         
-        
         // Debug camera positions
         //camera.Debug();
-
-        // After calculated the color and set it in the shader, now we render our triangle
-        //glBindVertexArray(VAO);
 
         // Calculate the model matrix 
         //for (unsigned int i = 0; i < 10; i++)
@@ -280,13 +261,6 @@ int main()
         glfwPollEvents();
     }
 
-    // Optional: de-allocate all resources when they are not used
-    //glDeleteVertexArrays(1, &VAO);
-    //glDeleteBuffers(1, &VBO);
-    //glDeleteBuffers(1, &EBO);
-    //glDeleteProgram(shaderProgram);
-
-
     // When we exit the rendering loop, we terminate glfw with their libraries.
     glfwTerminate();
     return 0;
@@ -304,19 +278,6 @@ void processInput(GLFWwindow* window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-
-    //if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-    //{
-    //    mixValue += 0.001f; // change this value accordingly (might be too slow or too fast based on system hardware)
-    //    if (mixValue >= 1.0f)
-    //        mixValue = 1.0f;
-    //}
-    //if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-    //{
-    //    mixValue -= 0.001f; // change this value accordingly (might be too slow or too fast based on system hardware)
-    //    if (mixValue <= 0.0f)
-    //        mixValue = 0.0f;
-    //}
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera.ProcessKeyboard(Camera_Movement::UPWARD, deltaTime);
@@ -367,5 +328,5 @@ void CalculateMouseRay() {
     // Ray to world coordinates
     vec3 mouseRay = vec3(rayWorld.x, rayWorld.y, rayWorld.z);
     mouseRay = normalize(mouseRay);
-    //printf("mouseRay:[%f, %f, %f]\n", mouseRay.x, mouseRay.y, mouseRay.z);
+    printf("mouseRay:[%f, %f, %f]\n", mouseRay.x, mouseRay.y, mouseRay.z);
 }

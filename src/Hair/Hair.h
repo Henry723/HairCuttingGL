@@ -43,8 +43,7 @@ public:
     vec3 hairPosition;
     vector<HairNode*> hairNodes;
 
-    int nodeCount = 0;//delete soon
-    int linkCount = 0;//delete soon
+    int nodeCount = 0;
 
 	Hair(vec3 contolPos1, vec3 contolPos2, vec3 contolPos3, vec3 contolPos4, int numLinks, const char* texSource);
 	~Hair();
@@ -59,6 +58,7 @@ private:
 	vector<HairLink*> hairLinks;
 	vec3 cPos1, cPos2, cPos3, cPos4;
 	int nLinks;
+    int linkCount = 0;
 
     unsigned int hairVBO;
 
@@ -117,7 +117,7 @@ private:
     //    0.25f,  0.0f,  0.0f,  1.0f,  0.5f
     //};
 
-    vector<float> v_hairVertices;
+    vector<float> v_hairVertices; //Try to do detection with this vertices, OR viewport check the depth buffer
 
     // World space positions of hair
 	float cardWidth = 0;

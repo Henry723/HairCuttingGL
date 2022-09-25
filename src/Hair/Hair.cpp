@@ -34,7 +34,7 @@ Hair::Hair(vec3 contolPos1, vec3 contolPos2, vec3 contolPos3, vec3 contolPos4, i
     for (int n = 0; n <= nLinks; n++) {
         if (n >= nLinks)
         {
-            CubicBezier(cPos1, cPos2, cPos3, cPos4, 1);
+            CubicBezier(cPos1, cPos2, cPos3, cPos4, 1); // Make sure ends at t = 1
         }
         else 
         {
@@ -64,6 +64,9 @@ Hair::~Hair()
         delete node;
     }
    hairNodes.clear();
+
+   glDeleteVertexArrays(1, &hairVAO);
+   glDeleteBuffers(1, &hairVBO);
 }
 
 void Hair::Setup()
@@ -152,7 +155,7 @@ void Hair::GenBezNode(vec3 nodePos)
         //If there are 2 or more nodes, start linking the previous node and the current node
         if (hairNodes.size() >= 2) {
             LinkNodes(hairNodes.at((size_t)currNodeSize - 1), hairNodes.at(currNodeSize));
-            linkCount++;//delete soon
+            linkCount++;
         }
     }
     nodeCount++;//delete soon
@@ -160,7 +163,9 @@ void Hair::GenBezNode(vec3 nodePos)
 
 void Hair::LinkNodes(HairNode* node1, HairNode* node2)
 {
-    hairLinks.push_back(new HairLink(node1, node2, true));
+    HairLink* link = new HairLink(node1, node2, true);
+    link->SetID(linkCount);
+    hairLinks.push_back(link);
 }
 
 void Hair::CreateNormalizedLinks(vector<HairLink*>& hairLinks)
