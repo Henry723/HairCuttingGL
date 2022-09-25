@@ -17,6 +17,7 @@ public:
 	float GetEndU();
 	float GetStartV();
 	float GetEndV();
+	int GetID();
 
 	HairNode* GetNode1();
 	HairNode* GetNode2();

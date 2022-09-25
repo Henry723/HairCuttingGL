@@ -122,8 +122,8 @@ int main()
     Hair* hair2 = new Hair(vec3(1.0f, 0.0f, 0), vec3(1.0f, -0.75f, 1.0f), vec3(1.0f, -1.25f, -1.0f), vec3(1.0f, -2.0f, 0), 3, hairTexSource);
     Hair* hair3 = new Hair(vec3(-1.0f, 0.0f, 0), vec3(-1.75f, -0.75f, 1.0f), vec3(-2.25f, -1.25f, -1.0f), vec3(-3.0f, -2.0f, 0), 10, hairTexSource);
 
-    hair1->DeleteLink(2);
-    hair1->DeleteLink(5);
+    /*hair1->DeleteLink(2);
+    hair1->DeleteLink(5);*/
 
     hair2->DeleteLink(1);
 
@@ -200,9 +200,7 @@ int main()
                 if (state == GLFW_PRESS)
                 {
                     CalculateMouseRay();
-                    if (IntersectionInRange(0, RAY_RANGE, mouseRay)) {
-
-                    }
+                    hair1->AABB_Test(camera.GetPosition(), mouseRay);
                 }
             }
         }

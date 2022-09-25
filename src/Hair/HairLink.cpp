@@ -44,6 +44,11 @@ float HairLink::GetEndV()
 	return endV;
 }
 
+int HairLink::GetID()
+{
+	return ID;
+}
+
 HairNode* HairLink::GetNode1()
 {
 	return n1;
@@ -119,6 +124,49 @@ void HairLink::SetBoxMinMax(float halfWidth)
 
 	boxMin = vec3(minX, minY, minZ);
 	boxMax = vec3(maxX, maxY, maxZ);
+}
+
+//https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection
+//https://www.youtube.com/watch?v=USjbg5QXk3g
+bool HairLink::AABB_Test(vec3 rayOrigin, vec3 rayDir)
+{
+	float temp;
+
+	// X test
+	float txMin = (boxMin.x - rayOrigin.x) / rayDir.x;
+	float txMax = (boxMax.x - rayOrigin.x) / rayDir.x;
+
+	if (txMax < txMin) { temp = txMax; txMax = txMin; txMin = temp; };
+
+	// Y test
+	float tyMin = (boxMin.y - rayOrigin.y) / rayDir.y;
+	float tyMax = (boxMax.y - rayOrigin.y) / rayDir.y;
+
+	if (tyMax < tyMin) { temp = tyMax; tyMax = tyMin; tyMin = temp; };
+
+	// Z test
+	float tzMin = (boxMin.z - rayOrigin.z) / rayDir.z;
+	float tzMax = (boxMax.z - rayOrigin.z) / rayDir.z;
+
+	if (tzMax < tzMin) { temp = tzMax; tzMax = tzMin; tzMin = temp; };
+
+	// Get greatest min and smallest max
+	float tMin = (txMin > tyMin) ? txMin : tyMin;
+	float tMax = (txMax < tyMax) ? txMax : tyMax;
+
+	if (txMin > tyMax || tyMin > txMax) 
+		return false;
+
+	if (tMin > tzMax || tzMin > tMax) 
+		return false;
+
+	if (tzMin > tMin) 
+		tMin = tzMin;
+
+	if (tzMax < tMax) 
+		tMax = tzMax;
+
+	return true;
 }
 
 

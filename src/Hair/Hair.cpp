@@ -371,3 +371,13 @@ void Hair::UpdatePhysics(float fixedDeltaTimeS)
     UpdateBufferData();
 }
 
+void Hair::AABB_Test(vec3 rayOrigin, vec3 rayDir)
+{
+    for (HairLink* link : hairLinks)
+    {
+        if (link->AABB_Test(rayOrigin, rayDir)) {
+            DeleteLink(link->GetID());
+        }
+    }
+}
+

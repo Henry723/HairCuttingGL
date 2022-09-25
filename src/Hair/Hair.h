@@ -54,6 +54,8 @@ public:
 
     void UpdatePhysics(float fixedDeltaTimeS);
 
+    void AABB_Test(vec3 rayOrigin, vec3 rayDir);
+
 private:
 	vector<HairLink*> hairLinks;
 	vec3 cPos1, cPos2, cPos3, cPos4;
