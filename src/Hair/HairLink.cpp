@@ -71,6 +71,57 @@ void HairLink::SetID(int id)
 	ID = id;
 }
 
+void HairLink::SetBoxMinMax(float halfWidth)
+{
+	float minX, minY, minZ, maxX, maxY, maxZ;
+
+	float minX1 = n1->position.x - halfWidth;
+	float minX2 = n2->position.x - halfWidth;
+
+	float maxX1 = n1->position.x + halfWidth;
+	float maxX2 = n2->position.x + halfWidth;
+
+	float Y1 = n1->position.y;
+	float Y2 = n2->position.y;
+
+	float Z1 = n1->position.z;
+	float Z2 = n2->position.z;
+
+	if (minX1 <= minX2)
+		minX = minX1;
+	else
+		minX = minX2;
+
+	if (maxX1 >= maxX2)
+		maxX = maxX1;
+	else
+		maxX = maxX2;
+
+	if (Y1 <= Y2) {
+		minY = Y1;
+		maxY = Y2;
+	}	
+	else
+	{
+		minY = Y2;
+		maxY = Y1;
+	}
+	
+	if (Z1 <= Z2) {
+		minZ = Z1;
+		maxZ = Z2;
+	}
+	else
+	{
+		minZ = Z2;
+		maxZ = Z1;
+	}
+
+	boxMin = vec3(minX, minY, minZ);
+	boxMax = vec3(maxX, maxY, maxZ);
+}
+
+
 float HairLink::GetDistance(HairNode* node1, HairNode* node2)
 {
 	float diffX = node1->position.x - node2->position.x;

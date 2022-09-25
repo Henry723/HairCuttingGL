@@ -24,6 +24,11 @@ glm::mat4 Camera::GetViewMatrix()
     return glm::lookAt(position, glm::vec3(0.0, 0.0, 0.0), up);
 }
 
+glm::vec3 Camera::GetPosition()
+{
+    return position;
+}
+
 void Camera::Debug()
 {
     std::cout << "Position x:" << position.x << "Position y:" << position.y << "Position z:" << position.z << std::endl;

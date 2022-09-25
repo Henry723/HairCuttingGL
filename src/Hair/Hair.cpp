@@ -190,6 +190,7 @@ void Hair::CreateNormalizedLinks(vector<HairLink*>& hairLinks)
 
         //Create mesh along the way
        CreateHairMesh(link->GetNode1(),link->GetNode2(), link->GetLength(), cardWidth, link->GetStartU(), link->GetStartV(), link->GetEndU(), link->GetEndV());
+       link->SetBoxMinMax(cardWidth);
     }
     //printf("total u: %f\n", u);
     //printf("total v: %f\n", v);

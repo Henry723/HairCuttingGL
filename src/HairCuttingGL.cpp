@@ -22,6 +22,8 @@ void processInput(GLFWwindow* window);
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
 //void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void CalculateMouseRay();
+bool IntersectionInRange(float start, float end, vec3 ray);
+vec3 GetPointOnRay(vec3 ray, float distance);
 
 // Camera
 Camera camera = Camera();
@@ -36,15 +38,20 @@ unsigned int nFrames = 0; //counting frame rate
 unsigned int frameCount = 0; // For average
 float totalFPS = 0.0f;
 
-//For physics
+// For physics
 int fixedFPS = 60;
 float fixedFrameS = (float)1 / fixedFPS;
 
 bool usingVsync = false;
 
-//Cursor
+// Cursor
 double mouseX, mouseY;
 int state;
+
+// Raycast
+vec3 mouseRay;
+const float RAY_RANGE = 600;
+
 
 int main() 
 {
@@ -188,10 +195,14 @@ int main()
                 // Inputs when turning vsync on
                 processInput(window);
 
+                // For ray to world intersection
                 state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
                 if (state == GLFW_PRESS)
                 {
                     CalculateMouseRay();
+                    if (IntersectionInRange(0, RAY_RANGE, mouseRay)) {
+
+                    }
                 }
             }
         }
@@ -326,7 +337,23 @@ void CalculateMouseRay() {
     vec4 rayWorld = inverse(view) * rayEye;
 
     // Ray to world coordinates
-    vec3 mouseRay = vec3(rayWorld.x, rayWorld.y, rayWorld.z);
+    mouseRay = vec3(rayWorld.x, rayWorld.y, rayWorld.z);
     mouseRay = normalize(mouseRay);
     printf("mouseRay:[%f, %f, %f]\n", mouseRay.x, mouseRay.y, mouseRay.z);
 }
+
+bool IntersectionInRange(float start, float end, vec3 ray)
+{
+    vec3 startPoint = GetPointOnRay(ray, start);
+    vec3 endPoint = GetPointOnRay(ray, end);
+    return false;
+}
+
+vec3 GetPointOnRay(vec3 ray, float distance)
+{
+    vec3 camPos = camera.GetPosition();
+    vec3 scaledRay = vec3(ray.x * distance, ray.y * distance, ray.z * distance);
+    vec3 finalPos = camPos + scaledRay;
+    return finalPos;
+}
+

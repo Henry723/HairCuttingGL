@@ -24,6 +24,9 @@ public:
 	void SetStartUV(float u, float v);
 	void SetEndUV(float u, float v);
 	void SetID(int id);
+	void SetBoxMinMax(float halfWidth);
+
+	bool AABB_Test(vec3 rayOrigin, vec3 rayDir);
 
 private:
 	HairNode* n1;
@@ -37,6 +40,9 @@ private:
 	float endU;
 	float startV;
 	float endV;
+
+	// Bounding box
+	vec3 boxMin, boxMax;
 
 	float GetDistance(HairNode* node1, HairNode* node2);
 	void Solve();
