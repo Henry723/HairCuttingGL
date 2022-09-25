@@ -362,6 +362,7 @@ void Hair::UpdatePhysics(float fixedDeltaTimeS)
         //Update mesh along the way
         HairLink* hairLink = (HairLink*)hairLinks.at(i);
         UpdateHairMesh(hairLink->GetNode1(), hairLink->GetNode2(), cardWidth, i);
+        hairLink->UpdateBoundingBox(cardWidth);
     }
     //for (HairLink* link : hairLinks)
     //{

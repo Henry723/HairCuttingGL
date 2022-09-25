@@ -125,9 +125,9 @@ int main()
     /*hair1->DeleteLink(2);
     hair1->DeleteLink(5);*/
 
-    hair2->DeleteLink(1);
+    //hair2->DeleteLink(1);
 
-    hair3->DeleteLink(4);
+    //hair3->DeleteLink(4);
     
     //hair1->hairNodes;
     std::cout << "Node count: " << hair1->nodeCount << std::endl;

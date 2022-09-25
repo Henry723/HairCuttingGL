@@ -29,6 +29,8 @@ public:
 
 	bool AABB_Test(vec3 rayOrigin, vec3 rayDir);
 
+	void UpdateBoundingBox(float timeStep);
+
 private:
 	HairNode* n1;
 	HairNode* n2;
