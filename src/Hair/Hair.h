@@ -25,7 +25,7 @@ The more links the hair has the better the curve
 5. Attach texture based off of uv space (0 to 1) of each rectangular mesh.
 **/
 
-const float cardWidth = 3.0f;
+//const float cardWidth = 3.0f;
 const static int MESH_ATTRIBUTE_SIZE = 30;
 
 class Hair
@@ -33,13 +33,7 @@ class Hair
 public:
     unsigned int hairVAO;
     unsigned int hairTextureID;
-    //vector<vec3> hairPosition{
-    //    vec3(-1.5f, 0.0f, -0.48f),
-    //    vec3(1.5f, 0.0f, 0.51f),
-    //    vec3(0.5f, 0.0f, 0.7f),
-    //    vec3(-0.3f, 0.0f, -2.3f),
-    //    vec3(0.5f, 0.0f, -0.6f)
-    //};
+
     vec3 hairPosition;
     vector<HairNode*> hairNodes;
 

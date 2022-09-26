@@ -190,7 +190,7 @@ void Hair::CreateNormalizedLinks(vector<HairLink*>& hairLinks)
 
         //Create mesh along the way
        CreateHairMesh(link->GetNode1(),link->GetNode2(), link->GetLength(), cardWidth, link->GetStartU(), link->GetStartV(), link->GetEndU(), link->GetEndV());
-       link->SetBoxMinMax(cardWidth);
+       link->SetBoxMinMax(cardWidth/2);
     }
     //printf("total u: %f\n", u);
     //printf("total v: %f\n", v);
@@ -208,7 +208,7 @@ void Hair::CreateHairMesh(HairNode* node1, HairNode* node2, float length, float 
 
     // Extrude towards x axis first to show in front for demo / futher testing
     // First vertex data (position)
-    v_hairVertices.push_back(node1->position.x - halfWidth);
+    v_hairVertices.push_back(node1->position.x);
     v_hairVertices.push_back(node1->position.y);
     v_hairVertices.push_back(node1->position.z);
 
@@ -217,7 +217,7 @@ void Hair::CreateHairMesh(HairNode* node1, HairNode* node2, float length, float 
     v_hairVertices.push_back(startV);
 
     // Second vertex data (position)
-    v_hairVertices.push_back(node2->position.x - halfWidth);
+    v_hairVertices.push_back(node2->position.x );
     v_hairVertices.push_back(node2->position.y);
     v_hairVertices.push_back(node2->position.z);
 
@@ -226,7 +226,7 @@ void Hair::CreateHairMesh(HairNode* node1, HairNode* node2, float length, float 
     v_hairVertices.push_back(endV);
 
     // Third vertex data (position)
-    v_hairVertices.push_back(node2->position.x + halfWidth);
+    v_hairVertices.push_back(node2->position.x);
     v_hairVertices.push_back(node2->position.y);
     v_hairVertices.push_back(node2->position.z);
 
@@ -235,7 +235,7 @@ void Hair::CreateHairMesh(HairNode* node1, HairNode* node2, float length, float 
     v_hairVertices.push_back(endV);
 
     // First vertex data (position)
-    v_hairVertices.push_back(node1->position.x - halfWidth);
+    v_hairVertices.push_back(node1->position.x);
     v_hairVertices.push_back(node1->position.y);
     v_hairVertices.push_back(node1->position.z);
 
@@ -244,7 +244,7 @@ void Hair::CreateHairMesh(HairNode* node1, HairNode* node2, float length, float 
     v_hairVertices.push_back(startV);
 
     // Third vertex data (position)
-    v_hairVertices.push_back(node2->position.x + halfWidth);
+    v_hairVertices.push_back(node2->position.x);
     v_hairVertices.push_back(node2->position.y);
     v_hairVertices.push_back(node2->position.z);
 
@@ -253,7 +253,7 @@ void Hair::CreateHairMesh(HairNode* node1, HairNode* node2, float length, float 
     v_hairVertices.push_back(endV);
 
     // Fourth vertex data (position)
-    v_hairVertices.push_back(node1->position.x + halfWidth);
+    v_hairVertices.push_back(node1->position.x );
     v_hairVertices.push_back(node1->position.y);
     v_hairVertices.push_back(node1->position.z);
 
@@ -362,7 +362,7 @@ void Hair::UpdatePhysics(float fixedDeltaTimeS)
         //Update mesh along the way
         HairLink* hairLink = (HairLink*)hairLinks.at(i);
         UpdateHairMesh(hairLink->GetNode1(), hairLink->GetNode2(), cardWidth, i);
-        hairLink->UpdateBoundingBox(cardWidth);
+        hairLink->UpdateBoundingBox(cardWidth/2);
     }
     //for (HairLink* link : hairLinks)
     //{

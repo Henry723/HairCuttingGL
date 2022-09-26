@@ -22,8 +22,8 @@ void processInput(GLFWwindow* window);
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
 //void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void CalculateMouseRay();
-bool IntersectionInRange(float start, float end, vec3 ray);
-vec3 GetPointOnRay(vec3 ray, float distance);
+//bool IntersectionInRange(float start, float end, vec3 ray);
+//vec3 GetPointOnRay(vec3 ray, float distance);
 
 // Camera
 Camera camera = Camera();
@@ -50,7 +50,7 @@ int state;
 
 // Raycast
 vec3 mouseRay;
-const float RAY_RANGE = 600;
+//const float RAY_RANGE = 600;
 
 
 int main() 
@@ -122,15 +122,15 @@ int main()
     Hair* hair2 = new Hair(vec3(1.0f, 0.0f, 0), vec3(1.0f, -0.75f, 1.0f), vec3(1.0f, -1.25f, -1.0f), vec3(1.0f, -2.0f, 0), 3, hairTexSource);
     Hair* hair3 = new Hair(vec3(-1.0f, 0.0f, 0), vec3(-1.75f, -0.75f, 1.0f), vec3(-2.25f, -1.25f, -1.0f), vec3(-3.0f, -2.0f, 0), 10, hairTexSource);
 
-    /*hair1->DeleteLink(2);
-    hair1->DeleteLink(5);*/
+    //hair1->DeleteLink(2);
+    //hair1->DeleteLink(5);
 
     //hair2->DeleteLink(1);
 
     //hair3->DeleteLink(4);
     
     //hair1->hairNodes;
-    std::cout << "Node count: " << hair1->nodeCount << std::endl;
+    //std::cout << "Node count: " << hair1->nodeCount << std::endl;
     //std::cout << "Link count: " << hair1->linkCount<< std::endl;
     //delete hair1;
     //std::cout << hair1->nodeCount << std::endl;
@@ -201,6 +201,8 @@ int main()
                 {
                     CalculateMouseRay();
                     hair1->AABB_Test(camera.GetPosition(), mouseRay);
+                    hair2->AABB_Test(camera.GetPosition(), mouseRay);
+                    hair3->AABB_Test(camera.GetPosition(), mouseRay);
                 }
             }
         }
@@ -217,18 +219,6 @@ int main()
         
         // Debug camera positions
         //camera.Debug();
-
-        // Calculate the model matrix 
-        //for (unsigned int i = 0; i < 10; i++)
-        //{
-        //    glm::mat4 model = glm::mat4(1.0f); // Initialize matrix to identity matrix first
-        //    model = glm::translate(model, cubePositions[i]);
-        //    float angle = 20.0f * i;
-        //    model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-        //    defaultShader.setMat4("model", model);
-        //
-        //    glDrawArrays(GL_TRIANGLES, 0, 36);
-        //}
 
         //Draw head
         defaultShader.use();
@@ -340,18 +330,18 @@ void CalculateMouseRay() {
     printf("mouseRay:[%f, %f, %f]\n", mouseRay.x, mouseRay.y, mouseRay.z);
 }
 
-bool IntersectionInRange(float start, float end, vec3 ray)
-{
-    vec3 startPoint = GetPointOnRay(ray, start);
-    vec3 endPoint = GetPointOnRay(ray, end);
-    return false;
-}
-
-vec3 GetPointOnRay(vec3 ray, float distance)
-{
-    vec3 camPos = camera.GetPosition();
-    vec3 scaledRay = vec3(ray.x * distance, ray.y * distance, ray.z * distance);
-    vec3 finalPos = camPos + scaledRay;
-    return finalPos;
-}
+//bool IntersectionInRange(float start, float end, vec3 ray)
+//{
+//    vec3 startPoint = GetPointOnRay(ray, start);
+//    vec3 endPoint = GetPointOnRay(ray, end);
+//    return false;
+//}
+//
+//vec3 GetPointOnRay(vec3 ray, float distance)
+//{
+//    vec3 camPos = camera.GetPosition();
+//    vec3 scaledRay = vec3(ray.x * distance, ray.y * distance, ray.z * distance);
+//    vec3 finalPos = camPos + scaledRay;
+//    return finalPos;
+//}
 

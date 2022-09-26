@@ -131,6 +131,8 @@ void HairLink::SetBoxMinMax(float halfWidth)
 bool HairLink::AABB_Test(vec3 rayOrigin, vec3 rayDir)
 {
 	float temp;
+	if (rayDir.x == 0.0f || rayDir.y == 0.0f || rayDir.z == 0.0f)
+		return false;
 
 	// X test
 	float txMin = (boxMin.x - rayOrigin.x) / rayDir.x;
@@ -228,10 +230,4 @@ float HairLink::GetDistance(HairNode* node1, HairNode* node2)
 	return sqrt(diffX * diffX + diffY * diffY + diffZ * diffZ);;
 }
 
-// Solves all the link constraints
-void HairLink::Solve()
-{
-	// Calculate the distance between two hair nodes
-	//float
-}
 

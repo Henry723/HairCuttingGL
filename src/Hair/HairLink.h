@@ -48,8 +48,4 @@ private:
 	vec3 boxMin, boxMax;
 
 	float GetDistance(HairNode* node1, HairNode* node2);
-	void Solve();
-	
-	void UpdateHairMesh();
-	void DrawHair();
 };
