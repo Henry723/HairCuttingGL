@@ -284,6 +284,17 @@ int main()
         glfwPollEvents();
     }
 
+    // Deallocate memory when we are done
+    delete hair1;
+    delete hair2;
+    delete hair3;
+
+    for (Hair* hair : hairs)
+    {
+        delete hair;
+    }
+    hairs.clear();
+
     // When we exit the rendering loop, we terminate glfw with their libraries.
     glfwTerminate();
     return 0;
