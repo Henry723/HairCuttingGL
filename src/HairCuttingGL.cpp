@@ -118,7 +118,7 @@ int main()
     // All the texture file for hair, mesh will generate within
     const char* hairTexSource = "./src/Renderer/Textures/hair01.png";
 
-    Head headModel(headModelSrc, headTexSrc);
+    //Head headModel(headModelSrc, headTexSrc);
     //Hair hair1(vec3(0, 0, 0), vec3(0, 1, 0), vec3(1, 1, 0), vec3(1, 0, 0), 100, hairTexSource);
     //Hair* hair1 = new Hair(vec3(0, 0, 0), vec3(0.25f, 1.0f, 0), vec3(0.75, -1, 0), vec3(1, 0, 0), 100, hairTexSource);
     
@@ -126,8 +126,8 @@ int main()
     Hair* hair2 = new Hair(vec3(1.0f, 0.0f + 2, 0), vec3(1.0f, -0.75f + 2, 1.0f), vec3(1.0f, -1.25f + 2, -1.0f), vec3(1.0f, -2.0f + 2, 0), 3, hairTexSource);
     Hair* hair3 = new Hair(vec3(-1.0f, 0.0f + 2, 0), vec3(-1.75f, -0.75f + 2, 1.0f), vec3(-2.25f, -1.25f + 2, -1.0f), vec3(-3.0f, -2.0f + 2, 0), 10, hairTexSource);
 
-    for (int z = -3; z < maxZ; z++) {
-        for (int x = -5; x < maxX; x++) {
+    for (int z = -3; z < maxZ; z++) { // z from -3 to 0, 3 rows
+        for (int x = -5; x < maxX; x++) { // x from -5 to 5, create 10 hairs per row
             hairs.push_back(new Hair(vec3((float)x, 0.0f, (float)z), vec3((float)x, -0.75f, (float)z + 1), 
                 vec3((float)x, -1.25f, (float)z - 1), vec3((float)x, -2.0f, (float)z), 10, hairTexSource));
         }
@@ -239,18 +239,18 @@ int main()
         //camera.Debug();
 
         //Draw head
-        defaultShader.use();
+        //defaultShader.use();
         mat4 model = mat4(1.0f);
-        model = translate(model, vec3(-2.0f, -1, 0));
-        model = scale(model, vec3(0.05, 0.05, 0.05));
-        defaultShader.setMat4("projection", projection);
-        defaultShader.setMat4("view", view);
-        defaultShader.setMat4("model", model);
+        //model = translate(model, vec3(-2.0f, -1, 0));
+        //model = scale(model, vec3(0.05, 0.05, 0.05));
+        //defaultShader.setMat4("projection", projection);
+        //defaultShader.setMat4("view", view);
+        //defaultShader.setMat4("model", model);
         //headModel.Draw(defaultShader,headModel.textureID);
 
         // Draw hairs
         hairShader.use();
-        model = mat4(1.0f);
+        //model = mat4(1.0f);
         hairShader.setMat4("projection", projection);
         hairShader.setMat4("view", view);
         

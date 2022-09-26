@@ -15,7 +15,7 @@ HairLink::HairLink(HairNode* node1, HairNode* node2, bool showLine)
 
 HairLink::~HairLink()
 {
-	std::cout << "Link Deleted" << std::endl;
+	//std::cout << "Link Deleted" << std::endl;
 	//delete this;
 }
 

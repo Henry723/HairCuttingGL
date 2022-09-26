@@ -60,10 +60,16 @@ Hair::~Hair()
     cout << "Hair destructor was called"<< endl;
     for (HairNode* node : hairNodes)
     {
-        nodeCount--;//delete soon
+        //nodeCount--;//delete soon
         delete node;
     }
    hairNodes.clear();
+
+   for (HairLink* link : hairLinks)
+   {
+       delete link;
+   }
+   hairLinks.clear();
 
    glDeleteVertexArrays(1, &hairVAO);
    glDeleteBuffers(1, &hairVBO);
@@ -158,7 +164,7 @@ void Hair::GenBezNode(vec3 nodePos)
             linkCount++;
         }
     }
-    nodeCount++;//delete soon
+    //nodeCount++;//delete soon
 }
 
 void Hair::LinkNodes(HairNode* node1, HairNode* node2)

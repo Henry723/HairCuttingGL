@@ -37,7 +37,7 @@ public:
     vec3 hairPosition;
     vector<HairNode*> hairNodes;
 
-    int nodeCount = 0;
+    //int nodeCount = 0;
 
 	Hair(vec3 contolPos1, vec3 contolPos2, vec3 contolPos3, vec3 contolPos4, int numLinks, const char* texSource);
 	~Hair();
