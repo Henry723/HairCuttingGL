@@ -34,7 +34,7 @@ Hair::Hair(vec3 contolPos1, vec3 contolPos2, vec3 contolPos3, vec3 contolPos4, i
     for (int n = 0; n <= nLinks; n++) {
         if (n >= nLinks)
         {
-            CubicBezier(cPos1, cPos2, cPos3, cPos4, 1);
+            CubicBezier(cPos1, cPos2, cPos3, cPos4, 1); // Make sure ends at t = 1
         }
         else 
         {
@@ -60,10 +60,19 @@ Hair::~Hair()
     cout << "Hair destructor was called"<< endl;
     for (HairNode* node : hairNodes)
     {
-        nodeCount--;//delete soon
+        //nodeCount--;//delete soon
         delete node;
     }
    hairNodes.clear();
+
+   for (HairLink* link : hairLinks)
+   {
+       delete link;
+   }
+   hairLinks.clear();
+
+   glDeleteVertexArrays(1, &hairVAO);
+   glDeleteBuffers(1, &hairVBO);
 }
 
 void Hair::Setup()
@@ -152,15 +161,17 @@ void Hair::GenBezNode(vec3 nodePos)
         //If there are 2 or more nodes, start linking the previous node and the current node
         if (hairNodes.size() >= 2) {
             LinkNodes(hairNodes.at((size_t)currNodeSize - 1), hairNodes.at(currNodeSize));
-            linkCount++;//delete soon
+            linkCount++;
         }
     }
-    nodeCount++;//delete soon
+    //nodeCount++;//delete soon
 }
 
 void Hair::LinkNodes(HairNode* node1, HairNode* node2)
 {
-    hairLinks.push_back(new HairLink(node1, node2, true));
+    HairLink* link = new HairLink(node1, node2, true);
+    link->SetID(linkCount);
+    hairLinks.push_back(link);
 }
 
 void Hair::CreateNormalizedLinks(vector<HairLink*>& hairLinks)
@@ -185,6 +196,7 @@ void Hair::CreateNormalizedLinks(vector<HairLink*>& hairLinks)
 
         //Create mesh along the way
        CreateHairMesh(link->GetNode1(),link->GetNode2(), link->GetLength(), cardWidth, link->GetStartU(), link->GetStartV(), link->GetEndU(), link->GetEndV());
+       link->SetBoxMinMax(cardWidth/2);
     }
     //printf("total u: %f\n", u);
     //printf("total v: %f\n", v);
@@ -356,6 +368,7 @@ void Hair::UpdatePhysics(float fixedDeltaTimeS)
         //Update mesh along the way
         HairLink* hairLink = (HairLink*)hairLinks.at(i);
         UpdateHairMesh(hairLink->GetNode1(), hairLink->GetNode2(), cardWidth, i);
+        hairLink->UpdateBoundingBox(cardWidth/2);
     }
     //for (HairLink* link : hairLinks)
     //{
@@ -363,5 +376,15 @@ void Hair::UpdatePhysics(float fixedDeltaTimeS)
     //    UpdateHairMesh(link->GetNode1(), link->GetNode2(), cardWidth);
     //}
     UpdateBufferData();
+}
+
+void Hair::AABB_Test(vec3 rayOrigin, vec3 rayDir)
+{
+    for (HairLink* link : hairLinks)
+    {
+        if (link->AABB_Test(rayOrigin, rayDir)) {
+            DeleteLink(link->GetID());
+        }
+    }
 }
 

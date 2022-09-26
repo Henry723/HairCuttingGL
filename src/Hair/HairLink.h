@@ -7,6 +7,7 @@ class HairLink
 {
 public:
 	bool showLine = true;
+	int ID;
 
 	HairLink(HairNode* node1, HairNode* node2, bool showLine);
 	~HairLink();
@@ -16,12 +17,19 @@ public:
 	float GetEndU();
 	float GetStartV();
 	float GetEndV();
+	int GetID();
 
 	HairNode* GetNode1();
 	HairNode* GetNode2();
 
 	void SetStartUV(float u, float v);
 	void SetEndUV(float u, float v);
+	void SetID(int id);
+	void SetBoxMinMax(float halfWidth);
+
+	bool AABB_Test(vec3 rayOrigin, vec3 rayDir);
+
+	void UpdateBoundingBox(float timeStep);
 
 private:
 	HairNode* n1;
@@ -36,9 +44,8 @@ private:
 	float startV;
 	float endV;
 
+	// Bounding box
+	vec3 boxMin, boxMax;
+
 	float GetDistance(HairNode* node1, HairNode* node2);
-	void Solve();
-	
-	void UpdateHairMesh();
-	void DrawHair();
 };

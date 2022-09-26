@@ -12,4 +12,6 @@ void main()
     if(texColor.a < 0.3)
         discard;
     FragColor = texColor;
+    //FragColor = vec4(vec3(gl_FragCoord.z), 1.0);
+
 }

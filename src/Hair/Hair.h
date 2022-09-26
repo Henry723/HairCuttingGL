@@ -25,7 +25,7 @@ The more links the hair has the better the curve
 5. Attach texture based off of uv space (0 to 1) of each rectangular mesh.
 **/
 
-const float cardWidth = 3.0f;
+//const float cardWidth = 3.0f;
 const static int MESH_ATTRIBUTE_SIZE = 30;
 
 class Hair
@@ -33,18 +33,11 @@ class Hair
 public:
     unsigned int hairVAO;
     unsigned int hairTextureID;
-    //vector<vec3> hairPosition{
-    //    vec3(-1.5f, 0.0f, -0.48f),
-    //    vec3(1.5f, 0.0f, 0.51f),
-    //    vec3(0.5f, 0.0f, 0.7f),
-    //    vec3(-0.3f, 0.0f, -2.3f),
-    //    vec3(0.5f, 0.0f, -0.6f)
-    //};
+
     vec3 hairPosition;
     vector<HairNode*> hairNodes;
 
-    int nodeCount = 0;//delete soon
-    int linkCount = 0;//delete soon
+    //int nodeCount = 0;
 
 	Hair(vec3 contolPos1, vec3 contolPos2, vec3 contolPos3, vec3 contolPos4, int numLinks, const char* texSource);
 	~Hair();
@@ -55,10 +48,13 @@ public:
 
     void UpdatePhysics(float fixedDeltaTimeS);
 
+    void AABB_Test(vec3 rayOrigin, vec3 rayDir);
+
 private:
 	vector<HairLink*> hairLinks;
 	vec3 cPos1, cPos2, cPos3, cPos4;
 	int nLinks;
+    int linkCount = 0;
 
     unsigned int hairVBO;
 
@@ -117,7 +113,7 @@ private:
     //    0.25f,  0.0f,  0.0f,  1.0f,  0.5f
     //};
 
-    vector<float> v_hairVertices;
+    vector<float> v_hairVertices; //Try to do detection with this vertices, OR viewport check the depth buffer
 
     // World space positions of hair
 	float cardWidth = 0;

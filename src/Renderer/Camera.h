@@ -51,6 +51,7 @@ public:
     Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
 
     glm::mat4 GetViewMatrix();
+    glm::vec3 GetPosition();
     void Debug();
     void ProcessKeyboard(Camera_Movement direction, float deltaTime);
 

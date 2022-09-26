@@ -19,9 +19,15 @@ const int SCREEN_HEIGHT = 1080;
 //Function decarations
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
+void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
+//void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+void CalculateMouseRay();
+//bool IntersectionInRange(float start, float end, vec3 ray);
+//vec3 GetPointOnRay(vec3 ray, float distance);
 
 // Camera
 Camera camera = Camera();
+mat4 projection, view;
 
 // Timing
 float currentTime = 0.0f;
@@ -32,11 +38,24 @@ unsigned int nFrames = 0; //counting frame rate
 unsigned int frameCount = 0; // For average
 float totalFPS = 0.0f;
 
-//For physics
+// For physics
 int fixedFPS = 60;
 float fixedFrameS = (float)1 / fixedFPS;
 
 bool usingVsync = false;
+
+// Cursor
+double mouseX, mouseY;
+int state;
+
+// Raycast
+vec3 mouseRay;
+//const float RAY_RANGE = 600;
+
+//Spawn hair in a grid
+const int maxZ = 0;
+const int maxX = 5;
+vector<Hair*> hairs;
 
 int main() 
 {
@@ -69,6 +88,11 @@ int main()
     // Tell GLFW to call this function when doing every screen resize by registering it.
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+    // Tell GLFW to call this function cursor is moving in viewport and mouse related functions.
+    //glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
+    glfwSetCursorPosCallback(window, cursor_position_callback);
+    //glfwSetMouseButtonCallback(window, mouse_button_callback);
+    
     // 4. glad: load all of OpenGL function pointers
     //      glad manages function pointers to OpenGL
     //      This loads the address of OpenGL pointers from GLAD and 
@@ -94,44 +118,34 @@ int main()
     // All the texture file for hair, mesh will generate within
     const char* hairTexSource = "./src/Renderer/Textures/hair01.png";
 
-    Head headModel(headModelSrc, headTexSrc);
+    //Head headModel(headModelSrc, headTexSrc);
     //Hair hair1(vec3(0, 0, 0), vec3(0, 1, 0), vec3(1, 1, 0), vec3(1, 0, 0), 100, hairTexSource);
     //Hair* hair1 = new Hair(vec3(0, 0, 0), vec3(0.25f, 1.0f, 0), vec3(0.75, -1, 0), vec3(1, 0, 0), 100, hairTexSource);
     
-    Hair* hair1 = new Hair(vec3(0, 0.0f, 0), vec3(0, -0.75f, 1.0f), vec3(0, -1.25f, -1.0f), vec3(0, -2.0f, 0), 10, hairTexSource);
-    Hair* hair2 = new Hair(vec3(1.0f, 0.0f, 0), vec3(1.0f, -0.75f, 1.0f), vec3(1.0f, -1.25f, -1.0f), vec3(1.0f, -2.0f, 0), 3, hairTexSource);
-    Hair* hair3 = new Hair(vec3(-1.0f, 0.0f, 0), vec3(-1.75f, -0.75f, 1.0f), vec3(-2.25f, -1.25f, -1.0f), vec3(-3.0f, -2.0f, 0), 10, hairTexSource);
+    Hair* hair1 = new Hair(vec3(0, 0.0f + 2, 0), vec3(0, -0.75f + 2, 1.0f), vec3(0, -1.25f + 2, -1.0f), vec3(0, -2.0f + 2, 0), 10, hairTexSource);
+    Hair* hair2 = new Hair(vec3(1.0f, 0.0f + 2, 0), vec3(1.0f, -0.75f + 2, 1.0f), vec3(1.0f, -1.25f + 2, -1.0f), vec3(1.0f, -2.0f + 2, 0), 3, hairTexSource);
+    Hair* hair3 = new Hair(vec3(-1.0f, 0.0f + 2, 0), vec3(-1.75f, -0.75f + 2, 1.0f), vec3(-2.25f, -1.25f + 2, -1.0f), vec3(-3.0f, -2.0f + 2, 0), 10, hairTexSource);
 
-    hair1->DeleteLink(5);
-    hair1->DeleteLink(2);
-
-    hair2->DeleteLink(1);
-
-    hair3->DeleteLink(4);
+    for (int z = -3; z < maxZ; z++) { // z from -3 to 0, 3 rows
+        for (int x = -5; x < maxX; x++) { // x from -5 to 5, create 10 hairs per row
+            hairs.push_back(new Hair(vec3((float)x, 0.0f, (float)z), vec3((float)x, -0.75f, (float)z + 1), 
+                vec3((float)x, -1.25f, (float)z - 1), vec3((float)x, -2.0f, (float)z), 10, hairTexSource));
+        }
+    }
+    //hair1->DeleteLink(2);
+    //hair1->DeleteLink(5);
+    //hair2->DeleteLink(1);
+    //hair3->DeleteLink(4);
     
     //hair1->hairNodes;
-    std::cout << "Node count: " << hair1->nodeCount << std::endl;
+    //std::cout << "Node count: " << hair1->nodeCount << std::endl;
     //std::cout << "Link count: " << hair1->linkCount<< std::endl;
     //delete hair1;
     //std::cout << hair1->nodeCount << std::endl;
 
-    // The call to glVertexAttribPointer registered VBO so can safely unbind this buffer
-    //glBindBuffer(GL_ARRAY_BUFFER, 0);
-    //Can unbind VAO so other other VAO call will not modify this VAO
-    //glBindVertexArray(0);
-
     // Uncomment to change to wireframe mode
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    //Hairnode testing
-    // ------
-    //HairNode hairnode1(glm::vec3(0, 2, 4));
-    //hairnode1.ApplyForce(glm::vec3(0, 2, 4));
-    //std::cout << "next acc:" << hairnode1.acceleration.x << hairnode1.acceleration.y << hairnode1.acceleration.z << std::endl;
-    //hair1 = nullptr;
-    //delete hair1ptr;
-    //std::cout << "next acc:" << std::endl;
-    // 
     // 5. Create our rendering Loop
     //      We have to let the application to keep looping until we closes the window.
 
@@ -169,7 +183,7 @@ int main()
         {
             totalFPS += (1.0f / deltaTime) * nFrames;
             //Limit frames for inputs physics update etc...
-            if (deltaTime >= fixedFrameS) //limit to 60 fps, and check if delta time is at around 16.67ms per frame.
+            if (deltaTime >= fixedFrameS) // Limit to 60 fps, and check if delta time is at around 16.67ms per frame.
             {
                 // Print fps
                 std::string FPS = std::to_string((int)round((1.0f / deltaTime) * nFrames));
@@ -186,87 +200,89 @@ int main()
                 hair2->UpdatePhysics(fixedFrameS);
                 hair3->UpdatePhysics(fixedFrameS);
 
+                for (Hair* hair : hairs)
+                {
+                    hair->UpdatePhysics(fixedFrameS);
+                }
+
                 // Inputs when turning vsync on
                 processInput(window);
+
+                // For ray to world intersection
+                state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+                if (state == GLFW_PRESS)
+                {
+                    CalculateMouseRay();
+                    hair1->AABB_Test(camera.GetPosition(), mouseRay);
+                    hair2->AABB_Test(camera.GetPosition(), mouseRay);
+                    hair3->AABB_Test(camera.GetPosition(), mouseRay);
+
+                    for (Hair* hair : hairs)
+                    {
+                        hair->AABB_Test(camera.GetPosition(), mouseRay);
+                    }
+                }
             }
         }
             
-
-        // Clear the screen with the color of our choice and clear
+        // Clear the screen with the color of our choice and clear depth buffer
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        //create perspective matrix and set it in shader
-        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
+        // Create perspective matrix and set it in shader
+        projection = perspective(radians(45.0f), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
 
-        //get view matrix from camera and set it in shader
-        glm::mat4 view = camera.GetViewMatrix();
-        
+        // Get view matrix from camera and set it in shader
+        view = camera.GetViewMatrix();
         
         // Debug camera positions
         //camera.Debug();
 
-        // After calculated the color and set it in the shader, now we render our triangle
-        //glBindVertexArray(VAO);
-
-        // Calculate the model matrix 
-        //for (unsigned int i = 0; i < 10; i++)
-        //{
-        //    glm::mat4 model = glm::mat4(1.0f); // Initialize matrix to identity matrix first
-        //    model = glm::translate(model, cubePositions[i]);
-        //    float angle = 20.0f * i;
-        //    model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-        //    defaultShader.setMat4("model", model);
-        //
-        //    glDrawArrays(GL_TRIANGLES, 0, 36);
-        //}
-
         //Draw head
-        defaultShader.use();
-        glm::mat4 model = mat4(1.0f);
-        model = glm::translate(model, vec3(-2.0f, -1, 0));
-        model = glm::scale(model, vec3(0.05, 0.05, 0.05));
-        defaultShader.setMat4("projection", projection);
-        defaultShader.setMat4("view", view);
-        defaultShader.setMat4("model", model);
+        //defaultShader.use();
+        mat4 model = mat4(1.0f);
+        //model = translate(model, vec3(-2.0f, -1, 0));
+        //model = scale(model, vec3(0.05, 0.05, 0.05));
+        //defaultShader.setMat4("projection", projection);
+        //defaultShader.setMat4("view", view);
+        //defaultShader.setMat4("model", model);
         //headModel.Draw(defaultShader,headModel.textureID);
 
         // Draw hairs
         hairShader.use();
-        model = mat4(1.0f);
+        //model = mat4(1.0f);
         hairShader.setMat4("projection", projection);
         hairShader.setMat4("view", view);
         
         // Place hair in scene
         model = mat4(1.0f);
         //model = translate(model, hair1->hairPosition[i]);
-        model = glm::translate(model, hair1->hairPosition);
+        //model = translate(model, hair1->hairPosition);
         hairShader.setMat4("model", model);
         hair1->DrawHair(hairShader, hair1->hairTextureID);
 
         // Hair 2
-        model = mat4(1.0f);
-        model = translate(model, hair2->hairPosition);
-        hairShader.setMat4("model", model);
+        //model = mat4(1.0f);
+        //model = translate(model, hair2->hairPosition);
+        //hairShader.setMat4("model", model);
         hair2->DrawHair(hairShader, hair2->hairTextureID);
 
         // Hair 3
-        model = mat4(1.0f);
-        model = translate(model, hair3->hairPosition);
-        hairShader.setMat4("model", model);
+        //model = mat4(1.0f);
+        //model = translate(model, hair3->hairPosition);
+        //hairShader.setMat4("model", model);
         hair3->DrawHair(hairShader, hair3->hairTextureID);
+
+
+        for (Hair* hair : hairs)
+        {
+            hair->DrawHair(hairShader, hair->hairTextureID);
+        }
 
         // glfw: swap buffers and poll IO events. (eg: key pressed, mouse moved, etc.)
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-
-    // Optional: de-allocate all resources when they are not used
-    //glDeleteVertexArrays(1, &VAO);
-    //glDeleteBuffers(1, &VBO);
-    //glDeleteBuffers(1, &EBO);
-    //glDeleteProgram(shaderProgram);
-
 
     // When we exit the rendering loop, we terminate glfw with their libraries.
     glfwTerminate();
@@ -286,19 +302,6 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    //if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-    //{
-    //    mixValue += 0.001f; // change this value accordingly (might be too slow or too fast based on system hardware)
-    //    if (mixValue >= 1.0f)
-    //        mixValue = 1.0f;
-    //}
-    //if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-    //{
-    //    mixValue -= 0.001f; // change this value accordingly (might be too slow or too fast based on system hardware)
-    //    if (mixValue <= 0.0f)
-    //        mixValue = 0.0f;
-    //}
-
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera.ProcessKeyboard(Camera_Movement::UPWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -312,3 +315,57 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
         camera.ProcessKeyboard(Camera_Movement::OUT, deltaTime);
 }
+
+void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
+    mouseX = xpos;
+    mouseY = ypos;
+    //printf("xPos: %f, yPos: %f\n", mouseX, mouseY);
+}
+
+//void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+//{
+//    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+//        CalculateMouseRay();
+//}
+
+void CalculateMouseRay() {
+    //TODO: Normalized Device Coordinates range [-1:1, -1:1, -1:1]
+    float x = (float)(2.0f * mouseX) / SCREEN_WIDTH - 1.0f;
+    float y = 1.0f - (float)(2.0f * mouseY) / SCREEN_HEIGHT;
+
+    vec2 rayNDS = vec2(x, y);
+    //printf("rayNDS:[%f, %f]\n", x, y);
+
+    // 4D Homogeneous Clip Coordinates
+    vec4 rayClip = vec4(rayNDS.x, rayNDS.y, -1.0f, 1.0f);
+    //printf("rayClip:[%f, %f, %f, %f]\n", rayClip.x, rayClip.y, rayClip.z, rayClip.w);
+
+    // 4D Eye (Camera) Coordinates
+    vec4 rayEye = inverse(projection) * rayClip;
+    rayEye = vec4(rayEye.x, rayEye.y, -1.0, 0.0);
+    //printf("rayEye:[%f, %f, %f, %f]\n", rayEye.x, rayEye.y, rayEye.z, rayEye.w);
+
+    // 4D World Coordinates
+    vec4 rayWorld = inverse(view) * rayEye;
+
+    // Ray to world coordinates
+    mouseRay = vec3(rayWorld.x, rayWorld.y, rayWorld.z);
+    mouseRay = normalize(mouseRay);
+    //printf("mouseRay:[%f, %f, %f]\n", mouseRay.x, mouseRay.y, mouseRay.z);
+}
+
+//bool IntersectionInRange(float start, float end, vec3 ray)
+//{
+//    vec3 startPoint = GetPointOnRay(ray, start);
+//    vec3 endPoint = GetPointOnRay(ray, end);
+//    return false;
+//}
+//
+//vec3 GetPointOnRay(vec3 ray, float distance)
+//{
+//    vec3 camPos = camera.GetPosition();
+//    vec3 scaledRay = vec3(ray.x * distance, ray.y * distance, ray.z * distance);
+//    vec3 finalPos = camPos + scaledRay;
+//    return finalPos;
+//}
+
