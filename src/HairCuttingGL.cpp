@@ -239,19 +239,19 @@ int main()
         // Place hair in scene
         model = mat4(1.0f);
         //model = translate(model, hair1->hairPosition[i]);
-        model = translate(model, hair1->hairPosition);
+        //model = translate(model, hair1->hairPosition);
         hairShader.setMat4("model", model);
         hair1->DrawHair(hairShader, hair1->hairTextureID);
 
         // Hair 2
         model = mat4(1.0f);
-        model = translate(model, hair2->hairPosition);
+        //model = translate(model, hair2->hairPosition);
         hairShader.setMat4("model", model);
         hair2->DrawHair(hairShader, hair2->hairTextureID);
 
         // Hair 3
         model = mat4(1.0f);
-        model = translate(model, hair3->hairPosition);
+        //model = translate(model, hair3->hairPosition);
         hairShader.setMat4("model", model);
         hair3->DrawHair(hairShader, hair3->hairTextureID);
 
