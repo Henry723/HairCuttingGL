@@ -52,6 +52,10 @@ int state;
 vec3 mouseRay;
 //const float RAY_RANGE = 600;
 
+//Spawn hair in a grid
+const int maxZ = 0;
+const int maxX = 5;
+vector<Hair*> hairs;
 
 int main() 
 {
@@ -118,15 +122,19 @@ int main()
     //Hair hair1(vec3(0, 0, 0), vec3(0, 1, 0), vec3(1, 1, 0), vec3(1, 0, 0), 100, hairTexSource);
     //Hair* hair1 = new Hair(vec3(0, 0, 0), vec3(0.25f, 1.0f, 0), vec3(0.75, -1, 0), vec3(1, 0, 0), 100, hairTexSource);
     
-    Hair* hair1 = new Hair(vec3(0, 0.0f, 0), vec3(0, -0.75f, 1.0f), vec3(0, -1.25f, -1.0f), vec3(0, -2.0f, 0), 10, hairTexSource);
-    Hair* hair2 = new Hair(vec3(1.0f, 0.0f, 0), vec3(1.0f, -0.75f, 1.0f), vec3(1.0f, -1.25f, -1.0f), vec3(1.0f, -2.0f, 0), 3, hairTexSource);
-    Hair* hair3 = new Hair(vec3(-1.0f, 0.0f, 0), vec3(-1.75f, -0.75f, 1.0f), vec3(-2.25f, -1.25f, -1.0f), vec3(-3.0f, -2.0f, 0), 10, hairTexSource);
+    Hair* hair1 = new Hair(vec3(0, 0.0f + 2, 0), vec3(0, -0.75f + 2, 1.0f), vec3(0, -1.25f + 2, -1.0f), vec3(0, -2.0f + 2, 0), 10, hairTexSource);
+    Hair* hair2 = new Hair(vec3(1.0f, 0.0f + 2, 0), vec3(1.0f, -0.75f + 2, 1.0f), vec3(1.0f, -1.25f + 2, -1.0f), vec3(1.0f, -2.0f + 2, 0), 3, hairTexSource);
+    Hair* hair3 = new Hair(vec3(-1.0f, 0.0f + 2, 0), vec3(-1.75f, -0.75f + 2, 1.0f), vec3(-2.25f, -1.25f + 2, -1.0f), vec3(-3.0f, -2.0f + 2, 0), 10, hairTexSource);
 
+    for (int z = -3; z < maxZ; z++) {
+        for (int x = -5; x < maxX; x++) {
+            hairs.push_back(new Hair(vec3((float)x, 0.0f, (float)z), vec3((float)x, -0.75f, (float)z + 1), 
+                vec3((float)x, -1.25f, (float)z - 1), vec3((float)x, -2.0f, (float)z), 10, hairTexSource));
+        }
+    }
     //hair1->DeleteLink(2);
     //hair1->DeleteLink(5);
-
     //hair2->DeleteLink(1);
-
     //hair3->DeleteLink(4);
     
     //hair1->hairNodes;
@@ -192,6 +200,11 @@ int main()
                 hair2->UpdatePhysics(fixedFrameS);
                 hair3->UpdatePhysics(fixedFrameS);
 
+                for (Hair* hair : hairs)
+                {
+                    hair->UpdatePhysics(fixedFrameS);
+                }
+
                 // Inputs when turning vsync on
                 processInput(window);
 
@@ -203,6 +216,11 @@ int main()
                     hair1->AABB_Test(camera.GetPosition(), mouseRay);
                     hair2->AABB_Test(camera.GetPosition(), mouseRay);
                     hair3->AABB_Test(camera.GetPosition(), mouseRay);
+
+                    for (Hair* hair : hairs)
+                    {
+                        hair->AABB_Test(camera.GetPosition(), mouseRay);
+                    }
                 }
             }
         }
@@ -244,16 +262,22 @@ int main()
         hair1->DrawHair(hairShader, hair1->hairTextureID);
 
         // Hair 2
-        model = mat4(1.0f);
+        //model = mat4(1.0f);
         //model = translate(model, hair2->hairPosition);
-        hairShader.setMat4("model", model);
+        //hairShader.setMat4("model", model);
         hair2->DrawHair(hairShader, hair2->hairTextureID);
 
         // Hair 3
-        model = mat4(1.0f);
+        //model = mat4(1.0f);
         //model = translate(model, hair3->hairPosition);
-        hairShader.setMat4("model", model);
+        //hairShader.setMat4("model", model);
         hair3->DrawHair(hairShader, hair3->hairTextureID);
+
+
+        for (Hair* hair : hairs)
+        {
+            hair->DrawHair(hairShader, hair->hairTextureID);
+        }
 
         // glfw: swap buffers and poll IO events. (eg: key pressed, mouse moved, etc.)
         glfwSwapBuffers(window);
@@ -327,7 +351,7 @@ void CalculateMouseRay() {
     // Ray to world coordinates
     mouseRay = vec3(rayWorld.x, rayWorld.y, rayWorld.z);
     mouseRay = normalize(mouseRay);
-    printf("mouseRay:[%f, %f, %f]\n", mouseRay.x, mouseRay.y, mouseRay.z);
+    //printf("mouseRay:[%f, %f, %f]\n", mouseRay.x, mouseRay.y, mouseRay.z);
 }
 
 //bool IntersectionInRange(float start, float end, vec3 ray)
