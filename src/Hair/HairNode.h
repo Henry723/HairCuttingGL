@@ -32,8 +32,6 @@ public:
 
 	void PinHair();
 	void UnpinHair();
-
-	void DrawHair();
 	
 private:
 	

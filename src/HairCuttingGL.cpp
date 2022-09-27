@@ -53,8 +53,10 @@ vec3 mouseRay;
 //const float RAY_RANGE = 600;
 
 //Spawn hair in a grid
-const int maxZ = 0;
+const int minX = -5;
 const int maxX = 5;
+const int minZ = -3;
+const int maxZ = 0;
 vector<Hair*> hairs;
 
 int main() 
@@ -126,8 +128,8 @@ int main()
     Hair* hair2 = new Hair(vec3(1.0f, 0.0f + 2, 0), vec3(1.0f, -0.75f + 2, 1.0f), vec3(1.0f, -1.25f + 2, -1.0f), vec3(1.0f, -2.0f + 2, 0), 3, hairTexSource);
     Hair* hair3 = new Hair(vec3(-1.0f, 0.0f + 2, 0), vec3(-1.75f, -0.75f + 2, 1.0f), vec3(-2.25f, -1.25f + 2, -1.0f), vec3(-3.0f, -2.0f + 2, 0), 10, hairTexSource);
 
-    for (int z = -3; z < maxZ; z++) { // z from -3 to 0, 3 rows
-        for (int x = -5; x < maxX; x++) { // x from -5 to 5, create 10 hairs per row
+    for (int z = minZ; z < maxZ; z++) { // z from -3 to 0, 3 rows
+        for (int x = minX; x < maxX; x++) { // x from -5 to 5, create 10 hairs per row
             hairs.push_back(new Hair(vec3((float)x, 0.0f, (float)z), vec3((float)x, -0.75f, (float)z + 1), 
                 vec3((float)x, -1.25f, (float)z - 1), vec3((float)x, -2.0f, (float)z), 10, hairTexSource));
         }
