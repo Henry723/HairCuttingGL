@@ -126,6 +126,28 @@ void HairLink::SetBoxMinMax(float halfWidth)
 	boxMax = vec3(maxX, maxY, maxZ);
 }
 
+void HairLink::SolveConstraints()
+{
+	float diffX = n1->position.x - n2->position.x;
+	float diffY = n1->position.y - n2->position.y;
+	float diffZ = n1->position.z - n2->position.z;
+
+	// Find current distance from the two nodes
+	float curDistance = GetDistance(n1, n2);
+
+	// Find the difference / ratio from the original lengh of the link
+	float ratio = (length - curDistance) / curDistance;
+
+	// Push / pull each node's position
+	n1->position.x -= diffX * ratio;
+	n1->position.y -= diffY * ratio;
+	n1->position.z -= diffZ * ratio;
+
+	n2->position.x += diffX * ratio;
+	n2->position.y += diffY * ratio;
+	n2->position.z += diffZ * ratio;
+}
+
 //https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection
 //https://www.youtube.com/watch?v=USjbg5QXk3g
 bool HairLink::AABB_Test(vec3 rayOrigin, vec3 rayDir)

@@ -27,6 +27,8 @@ public:
 	void SetID(int id);
 	void SetBoxMinMax(float halfWidth);
 
+	void SolveConstraints();
+
 	bool AABB_Test(vec3 rayOrigin, vec3 rayDir);
 
 	void UpdateBoundingBox(float timeStep);
