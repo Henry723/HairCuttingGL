@@ -126,6 +126,7 @@ void HairLink::SetBoxMinMax(float halfWidth)
 	boxMax = vec3(maxX, maxY, maxZ);
 }
 
+// Because when deleting links, there are still nodes that calculate the deleted node which causes mesh warping
 void HairLink::SolveConstraints()
 {
 	float diffX = n1->position.x - n2->position.x;
