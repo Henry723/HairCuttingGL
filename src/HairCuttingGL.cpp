@@ -1,11 +1,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "Renderer/stb_image.h"
 #include"Renderer/Shader.h"
 #include"Renderer/Camera.h"
 #include"Renderer/Head.h"
-#include"Hair/HairNode.h"
 
 #include<iostream>
 

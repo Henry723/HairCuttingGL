@@ -35,8 +35,6 @@ public:
     unsigned int hairTextureID;
 
     vec3 hairPosition;
-    vector<HairNode*> hairNodes;
-
     //int nodeCount = 0;
 
 	Hair(vec3 contolPos1, vec3 contolPos2, vec3 contolPos3, vec3 contolPos4, int numLinks, const char* texSource);
@@ -51,6 +49,7 @@ public:
     void AABB_Test(vec3 rayOrigin, vec3 rayDir);
 
 private:
+    vector<HairNode*> hairNodes;
 	vector<HairLink*> hairLinks;
 	vec3 cPos1, cPos2, cPos3, cPos4;
 	int nLinks;
