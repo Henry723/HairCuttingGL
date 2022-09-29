@@ -34,9 +34,9 @@ public:
 	void Draw(Shader& shader, unsigned int textureID);
 
 private:
-	void loadHeadModel(const char* modelSource);
-	void processNode(aiNode* node, const aiScene* scene);
-	Mesh processMesh(aiMesh* mesh, const aiScene* scene);
-	void loadTexture(const char* texSource, unsigned int& textureID);
+	void LoadHeadModel(const char* modelSource);
+	void ProcessNode(aiNode* node, const aiScene* scene);
+	Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene);
+	void LoadTexture(const char* texSource, unsigned int& textureID);
 };
 

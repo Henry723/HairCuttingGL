@@ -18,7 +18,7 @@ const int SCREEN_HEIGHT = 1080;
 
 //Function decarations
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow* window);
+void ProcessInput(GLFWwindow* window);
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
 //void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void CalculateMouseRay();
@@ -178,7 +178,7 @@ int main()
             nFrames = 0;
 
             // Inputs when turning vsync off, should be fine with capped frames
-            processInput(window);
+            ProcessInput(window);
             
         } 
         else
@@ -208,7 +208,7 @@ int main()
                 }
 
                 // Inputs when turning vsync on
-                processInput(window);
+                ProcessInput(window);
 
                 // For ray to world intersection
                 state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
@@ -310,7 +310,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 // This function will keep track of the inputs, this will return which key it is being
 // pressed.
-void processInput(GLFWwindow* window)
+void ProcessInput(GLFWwindow* window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);

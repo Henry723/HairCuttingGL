@@ -2,8 +2,8 @@
 
 Head::Head(const char* modelSource, const char* texSource)
 {
-	loadHeadModel(modelSource);
-    loadTexture(texSource, textureID);
+	LoadHeadModel(modelSource);
+    LoadTexture(texSource, textureID);
 }
 
 Head::~Head()
@@ -16,7 +16,7 @@ void Head::Draw(Shader& shader, unsigned int textureID)
         meshes[i].Draw(shader, textureID);
 }
 
-void Head::loadHeadModel(const char* modelSource)
+void Head::LoadHeadModel(const char* modelSource)
 {
     //cout << "Loading model" << endl;
 	Assimp::Importer importer;
@@ -28,11 +28,11 @@ void Head::loadHeadModel(const char* modelSource)
 		return;
 	}
 
-	processNode(scene->mRootNode, scene);
+	ProcessNode(scene->mRootNode, scene);
     //cout << "Completed" << endl;
 }
 
-void Head::processNode(aiNode* node, const aiScene* scene)
+void Head::ProcessNode(aiNode* node, const aiScene* scene)
 {
     //cout << "node num mesh:" << node->mNumMeshes << endl;
     // process each mesh located at the current node
@@ -41,16 +41,16 @@ void Head::processNode(aiNode* node, const aiScene* scene)
         // the node object only contains indices to index the actual objects in the scene. 
         // the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-        meshes.push_back(processMesh(mesh, scene));
+        meshes.push_back(ProcessMesh(mesh, scene));
     }
     // after we've processed all of the meshes (if any) we then recursively process each of the children nodes
     for (unsigned int i = 0; i < node->mNumChildren; i++)
     {
-        processNode(node->mChildren[i], scene);
+        ProcessNode(node->mChildren[i], scene);
     }
 }
 
-Mesh Head::processMesh(aiMesh* mesh, const aiScene* scene)
+Mesh Head::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 {
     //cout << "processing mesh" << endl;
     //Data to fill in
@@ -108,7 +108,7 @@ Mesh Head::processMesh(aiMesh* mesh, const aiScene* scene)
     return Mesh(vertices, indices);
 }
 
-void Head::loadTexture(const char* texSource, unsigned int& textureID)
+void Head::LoadTexture(const char* texSource, unsigned int& textureID)
 {
     // Load image, create texture and generate mipmaps
     int width, height, nrChannels;

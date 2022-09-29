@@ -1,12 +1,12 @@
 #include "Camera.h"
 
-Camera::Camera(glm::vec3 pos = glm::vec3(0.0f, 0.0f, RADIUS), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : front(glm::vec3(0.0f, 0.0f, -1.0f))
+Camera::Camera(vec3 pos = vec3(0.0f, 0.0f, RADIUS), vec3 up = vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : front(glm::vec3(0.0f, 0.0f, -1.0f))
 {
     position = pos;
     worldUp = up;
     this->yaw = yaw;
     this->pitch = pitch;
-    updateCameraVectors();
+    UpdateCameraVectors();
 }
 
 Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : front(glm::vec3(0.0f, 0.0f, -1.0f))
@@ -15,16 +15,16 @@ Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float u
     worldUp = glm::vec3(upX, upY, upZ);
     this->yaw = yaw;
     this->pitch = pitch;
-    updateCameraVectors();
+    UpdateCameraVectors();
 }
 
 // returns the view matrix calculated using Euler Angles and the LookAt Matrix
-glm::mat4 Camera::GetViewMatrix()
+mat4 Camera::GetViewMatrix()
 {
-    return glm::lookAt(position, glm::vec3(0.0, 0.0, 0.0), up);
+    return lookAt(position, glm::vec3(0.0, 0.0, 0.0), up);
 }
 
-glm::vec3 Camera::GetPosition()
+vec3 Camera::GetPosition()
 {
     return position;
 }
@@ -69,19 +69,19 @@ void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime)
     float camX = radius * sin(yaw) * cos((pitch));
     float camY = radius * sin(pitch);
     float camZ = radius * cos((yaw)) * cos((pitch));
-    position = glm::vec3(camX, camY, camZ);
+    position = vec3(camX, camY, camZ);
 }
 
 // calculates the front vector from the Camera's (updated) Euler Angles
-void Camera::updateCameraVectors()
+void Camera::UpdateCameraVectors()
 {
     // calculate the new Front vector
-    glm::vec3 front;
-    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    front.y = sin(glm::radians(pitch));
-    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    front = glm::normalize(front);
+    vec3 front;
+    front.x = cos(radians(yaw)) * cos(radians(pitch));
+    front.y = sin(radians(pitch));
+    front.z = sin(radians(yaw)) * cos(radians(pitch));
+    front = normalize(front);
     // also re-calculate the Right and Up vector
-    right = glm::normalize(glm::cross(front, worldUp));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
-    up = glm::normalize(glm::cross(right, front));
+    right = normalize(cross(front, worldUp));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+    up = normalize(cross(right, front));
 }

@@ -5,6 +5,9 @@
 
 #include <vector>
 #include<iostream>
+
+using namespace glm;
+
 enum class Camera_Movement {
     UPWARD,
     DOWNWARD,
@@ -25,11 +28,11 @@ class Camera
 {
 public:
     // camera Attributes
-    glm::vec3 position;
-    glm::vec3 front;
-    glm::vec3 up;
-    glm::vec3 right;
-    glm::vec3 worldUp;
+    vec3 position;
+    vec3 front;
+    vec3 up;
+    vec3 right;
+    vec3 worldUp;
     // euler Angles
     float yaw;
     float pitch;
@@ -38,23 +41,23 @@ public:
     float radius;
 
     Camera() { 
-        position = glm::vec3(0.0f, 0.0f, RADIUS);
-        worldUp = glm::vec3(0.0f, 1.0f, 0.0f); 
+        position = vec3(0.0f, 0.0f, RADIUS);
+        worldUp = vec3(0.0f, 1.0f, 0.0f); 
         yaw = YAW; 
         pitch = PITCH; 
-        front = glm::vec3(0.0f, 0.0f, -1.0f); 
+        front = vec3(0.0f, 0.0f, -1.0f); 
         movementSpeed = SPEED; 
         radius = RADIUS;
-        updateCameraVectors();
+        UpdateCameraVectors();
     };
-    Camera(glm::vec3 pos, glm::vec3 up, float yaw, float pitch);
+    Camera(vec3 pos, vec3 up, float yaw, float pitch);
     Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
 
-    glm::mat4 GetViewMatrix();
-    glm::vec3 GetPosition();
+    mat4 GetViewMatrix();
+    vec3 GetPosition();
     void Debug();
     void ProcessKeyboard(Camera_Movement direction, float deltaTime);
 
 private:
-    void updateCameraVectors();
+    void UpdateCameraVectors();
 };
