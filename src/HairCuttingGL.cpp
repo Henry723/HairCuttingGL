@@ -251,16 +251,16 @@ int main()
         //headModel.Draw(defaultShader,headModel.textureID);
 
         // Draw hairs
-        hairShader.use();
+        hairShader.Use();
         //model = mat4(1.0f);
-        hairShader.setMat4("projection", projection);
-        hairShader.setMat4("view", view);
+        hairShader.SetMat4("projection", projection);
+        hairShader.SetMat4("view", view);
         
         // Place hair in scene
         model = mat4(1.0f);
         //model = translate(model, hair1->hairPosition[i]);
         //model = translate(model, hair1->hairPosition);
-        hairShader.setMat4("model", model);
+        hairShader.SetMat4("model", model);
         hair1->DrawHair(hairShader, hair1->hairTextureID);
 
         // Hair 2
